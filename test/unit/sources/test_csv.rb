@@ -16,7 +16,11 @@ module TestSources
 
     test "load from string" do
       csv = Sources::CSV.new(:string => "foo,bar\n1,2")
-      assert_equal %w{foo bar}, csv.field_names
+      expected_schema = [
+        ['foo', { :type => :string }],
+        ['bar', { :type => :string }]
+      ]
+      assert_equal expected_schema, csv.schema
     end
 
     test "load from file" do
@@ -25,7 +29,11 @@ module TestSources
       file.close
 
       csv = Sources::CSV.new(:file => file.path)
-      assert_equal %w{foo bar}, csv.field_names
+      expected_schema = [
+        ['foo', { :type => :string }],
+        ['bar', { :type => :string }]
+      ]
+      assert_equal expected_schema, csv.schema
     end
 
     test "each" do

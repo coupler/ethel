@@ -9,8 +9,14 @@ module Ethel
         end
       end
 
-      def field_names
-        @data.headers
+      def schema
+        if @schema.nil?
+          @schema = []
+          @data.headers.each do |name|
+            @schema << [name, {:type => :string}]
+          end
+        end
+        @schema
       end
 
       def each
