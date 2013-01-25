@@ -1,5 +1,7 @@
-require "ethel/version"
+require 'csv'
+
+require 'ethel/version'
+require 'ethel/source'
 
 module Ethel
-  # Your code goes here...
 end
