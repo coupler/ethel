@@ -21,6 +21,21 @@ class TestSource < Test::Unit::TestCase
     assert_equal %w{foo bar}, source.field_names
   end
 
+  test "fields" do
+    klass = new_subclass do
+      def schema
+        [['foo', {:type => :string}], ['bar', {:type => :string}]]
+      end
+    end
+    source = klass.new
+
+    field_1 = stub('field 1')
+    Ethel::Field.expects(:new).with('foo', {:type => :string}).returns(field_1)
+    field_2 = stub('field 2')
+    Ethel::Field.expects(:new).with('bar', {:type => :string}).returns(field_2)
+    assert_equal({'foo' => field_1, 'bar' => field_2}, source.fields)
+  end
+
   test "each raises NotImplementedError" do
     klass = new_subclass
     source = klass.new

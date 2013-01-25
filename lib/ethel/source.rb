@@ -14,6 +14,13 @@ module Ethel
       schema.collect(&:first)
     end
 
+    def fields
+      @fields ||= schema.inject({}) do |hash, (name, options)|
+        hash[name] = Field.new(name, options)
+        hash
+      end
+    end
+
     def all
       to_a
     end
