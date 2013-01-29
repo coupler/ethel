@@ -7,9 +7,9 @@ Gem::Specification.new do |gem|
   gem.name          = "ethel"
   gem.version       = Ethel::VERSION
   gem.authors       = ["Jeremy Stephens"]
-  gem.email         = ["viking@pillageandplunder.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.email         = ["jeremy.f.stephens@vanderbilt.edu"]
+  gem.description   = %q{Ethel is an ORM-agnostic library of ETL (extract-transform-load) utilities}
+  gem.summary       = %q{ORM-agnostic ETL (extract-transform-load) utilities}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
