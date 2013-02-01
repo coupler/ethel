@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["jeremy.f.stephens@vanderbilt.edu"]
   gem.description   = %q{Ethel is an ORM-agnostic library of ETL (extract-transform-load) utilities}
   gem.summary       = %q{ORM-agnostic ETL (extract-transform-load) utilities}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/coupler/ethel"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
