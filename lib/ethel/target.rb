@@ -1,5 +1,8 @@
 module Ethel
   class Target
+    def initialize(*args)
+    end
+
     def add_field(*args)
       raise NotImplementedError
     end

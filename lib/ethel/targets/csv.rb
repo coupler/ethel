@@ -2,6 +2,8 @@ module Ethel
   module Targets
     class CSV < Target
       def initialize(options)
+        super
+
         @options = options
         @fields = []
         @rows = []
