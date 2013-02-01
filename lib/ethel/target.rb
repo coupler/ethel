@@ -4,6 +4,9 @@ module Ethel
       raise NotImplementedError
     end
 
+    def prepare
+    end
+
     def add_row(*args)
       raise NotImplementedError
     end

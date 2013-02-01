@@ -18,6 +18,7 @@ module Ethel
       @operations.each do |operation|
         operation.before_transform(@source, @target)
       end
+      @target.prepare
 
       @source.each do |row|
         row = @operations.inject(row) { |r, op| op.transform(r) }

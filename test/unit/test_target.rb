@@ -28,4 +28,10 @@ class TestTarget < Test::Unit::TestCase
     target = klass.new
     assert_nil target.data
   end
+
+  test "#prepare is a no-op" do
+    klass = new_subclass
+    target = klass.new
+    assert_nothing_raised { target.prepare }
+  end
 end
