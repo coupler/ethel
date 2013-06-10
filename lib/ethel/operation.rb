@@ -27,3 +27,4 @@ end
 require 'ethel/operations/add_field'
 require 'ethel/operations/copy'
 require 'ethel/operations/cast'
+require 'ethel/operations/update'
