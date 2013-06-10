@@ -11,7 +11,7 @@ module TestOperations
     end
 
     def setup
-      @field = stub('field', :name => 'foo')
+      @field = stub('field', :name => 'foo', :type => :integer)
     end
 
     test "update a field's values" do
@@ -34,6 +34,39 @@ module TestOperations
       op = Operations::Update.new(@field) { |v| v > 200 ? 321 : v }
       assert_equal(row_1, op.transform(row_1.dup))
       assert_equal({'id' => 2, 'foo' => 321, 'bar' => 'baz'}, op.transform(row_2))
+    end
+
+    test "update a field's values with wrong type" do
+      assert_raises(InvalidFieldType) do
+        Operations::Update.new(@field, "junk")
+      end
+    end
+
+    test "update a field's values with nil" do
+      assert_nothing_raised do
+        Operations::Update.new(@field, nil)
+      end
+    end
+
+    test "update a blob field with string" do
+      @field.stubs(:type).returns(:blob)
+      assert_nothing_raised do
+        Operations::Update.new(@field, "foo")
+      end
+    end
+
+    test "update a field's value with block with wrong type" do
+      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
+      op = Operations::Update.new(@field) { |v| "foo" }
+      assert_raises(InvalidFieldType) do
+        op.transform(row)
+      end
+    end
+
+    test "update a field's value with block with nil" do
+      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
+      op = Operations::Update.new(@field) { |v| nil }
+      assert_equal({'id' => 1, 'foo' => nil, 'bar' => 'baz'}, op.transform(row))
     end
   end
 end

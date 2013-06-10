@@ -10,6 +10,12 @@ module Ethel
         super
         @field = field
         if args.length > 0
+          if !args[0].nil?
+            value_type = Util.type_of(args[0])
+            if !(@field.type == :blob && value_type == :string) && value_type != @field.type
+              raise InvalidFieldType
+            end
+          end
           @value = args[0]
           @filter = block
         elsif block
@@ -20,7 +26,11 @@ module Ethel
       def transform(row)
         row = super(row)
         if @filter.nil? || @filter.call(row[@field.name])
-          row[@field.name] = @value.is_a?(Proc) ? @value.call(row[@field.name]) : @value
+          new_value = @value.is_a?(Proc) ? @value.call(row[@field.name]) : @value
+          if !new_value.nil? && Util.type_of(new_value) != @field.type
+            raise InvalidFieldType
+          end
+          row[@field.name] = new_value
         end
         row
       end
