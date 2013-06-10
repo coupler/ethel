@@ -8,4 +8,5 @@ require 'ethel/target'
 require 'ethel/migration'
 
 module Ethel
+  class InvalidFieldType < Exception; end
 end
