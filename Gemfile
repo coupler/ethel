@@ -7,5 +7,5 @@ group :development do
   gem 'test-unit'
   gem 'mocha'
   gem 'guard-test'
-  gem 'rb-inotify', '~> 0.8.8'
+  gem 'rb-inotify', '~> 0.9'
 end
