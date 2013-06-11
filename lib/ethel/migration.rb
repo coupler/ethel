@@ -14,6 +14,10 @@ module Ethel
       @operations << Operations::Cast.new(field, type)
     end
 
+    def update(field, *args, &block)
+      @operations << Operations::Update.new(field, *args, &block)
+    end
+
     def run
       @operations.each do |operation|
         operation.before_transform(@source, @target)

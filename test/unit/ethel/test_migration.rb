@@ -44,4 +44,24 @@ class TestMigration < Test::Unit::TestCase
     seq << @target.expects(:flush)
     m.run
   end
+
+  test "updating a field" do
+    m = Ethel::Migration.new(@source, @target)
+
+    field = stub('field')
+    update_operation = stub('update operation')
+    Ethel::Operations::Update.expects(:new).with(field, 123).
+      returns(update_operation)
+    m.update(field, 123)
+
+    seq = SequenceHelper.new('run sequence')
+    row = stub('row')
+    seq << update_operation.expects(:before_transform).with(@source, @target)
+    seq << @target.expects(:prepare)
+    seq << @source.expects(:each).yields(row)
+    seq << update_operation.expects(:transform).with(row).returns(row)
+    seq << @target.expects(:add_row).with(row)
+    seq << @target.expects(:flush)
+    m.run
+  end
 end
