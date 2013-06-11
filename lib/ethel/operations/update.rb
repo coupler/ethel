@@ -21,6 +21,7 @@ module Ethel
         elsif block
           @value = block
         end
+        add_child_operation(AddField.new(@field))
       end
 
       def transform(row)
