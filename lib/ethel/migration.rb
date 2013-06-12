@@ -9,6 +9,11 @@ module Ethel
       @reader.read(@dataset)
     end
 
+    def select(*field_names)
+      fields = field_names.collect { |name| @dataset.field(name) }
+      add_operation(Operations::Select.new(*fields))
+    end
+
     def cast(field_name, type)
       add_operation(Operations::Cast.new(@dataset.field(field_name), type))
     end

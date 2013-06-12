@@ -57,4 +57,31 @@ class TestMigration < Test::Unit::TestCase
     seq << @writer.expects(:flush)
     m.run
   end
+
+  test "selecting fields" do
+    dataset = stub('dataset')
+    Ethel::Dataset.expects(:new).returns(dataset)
+    @reader.expects(:read).with(dataset)
+    m = Ethel::Migration.new(@reader, @writer)
+
+    field_1 = stub('field 1')
+    dataset.expects(:field).with('foo').returns(field_1)
+    field_2 = stub('field 2')
+    dataset.expects(:field).with('bar').returns(field_2)
+    select_operation = stub('select operation')
+    Ethel::Operations::Select.expects(:new).with(field_1, field_2).
+      returns(select_operation)
+    select_operation.expects(:setup).with(dataset)
+    m.select('foo', 'bar')
+
+    seq = SequenceHelper.new('run sequence')
+
+    seq << @writer.expects(:prepare).with(dataset)
+    row = stub('row')
+    seq << @reader.expects(:each_row).yields(row)
+    seq << select_operation.expects(:transform).with(row).returns(row)
+    seq << @writer.expects(:add_row).with(row)
+    seq << @writer.expects(:flush)
+    m.run
+  end
 end
