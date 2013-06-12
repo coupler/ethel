@@ -4,9 +4,9 @@ module Ethel
       @child_operations = []
     end
 
-    def before_transform(source, target)
+    def setup(dataset)
       @child_operations.each do |child_operation|
-        child_operation.before_transform(source, target)
+        child_operation.setup(dataset)
       end
     end
 
@@ -25,6 +25,5 @@ module Ethel
 end
 
 require 'ethel/operations/add_field'
-require 'ethel/operations/copy'
 require 'ethel/operations/cast'
 require 'ethel/operations/update'

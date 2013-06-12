@@ -2,66 +2,59 @@ require 'helper'
 
 class TestMigration < Test::Unit::TestCase
   def setup
-    @source = stub('source')
-    @target = stub('target')
-  end
-
-  test "copying a field" do
-    m = Ethel::Migration.new(@source, @target)
-
-    field = stub('field')
-    copy_operation = stub('copy operation')
-    Ethel::Operations::Copy.expects(:new).with(field).returns(copy_operation)
-    m.copy(field)
-
-    seq = SequenceHelper.new('run sequence')
-    row = stub('row')
-    seq << copy_operation.expects(:before_transform).with(@source, @target)
-    seq << @target.expects(:prepare)
-    seq << @source.expects(:each).yields(row)
-    seq << copy_operation.expects(:transform).with(row).returns(row)
-    seq << @target.expects(:add_row).with(row)
-    seq << @target.expects(:flush)
-    m.run
+    @reader = stub('reader')
+    @writer = stub('writer')
+    Ethel::Operations::Cast.stubs(:new)
+    Ethel::Operations::Update.stubs(:new)
   end
 
   test "casting a field" do
-    m = Ethel::Migration.new(@source, @target)
+    dataset = stub('dataset')
+    Ethel::Dataset.expects(:new).returns(dataset)
+    @reader.expects(:read).with(dataset)
+    m = Ethel::Migration.new(@reader, @writer)
 
-    field = stub('field')
+    field = stub('field', :name => 'foo')
+    dataset.expects(:field).with('foo').returns(field)
     cast_operation = stub('cast operation')
     Ethel::Operations::Cast.expects(:new).with(field, :integer).
       returns(cast_operation)
-    m.cast(field, :integer)
+    cast_operation.expects(:setup).with(dataset)
+    m.cast('foo', :integer)
 
     seq = SequenceHelper.new('run sequence')
+
+    seq << @writer.expects(:prepare).with(dataset)
     row = stub('row')
-    seq << cast_operation.expects(:before_transform).with(@source, @target)
-    seq << @target.expects(:prepare)
-    seq << @source.expects(:each).yields(row)
+    seq << @reader.expects(:each_row).yields(row)
     seq << cast_operation.expects(:transform).with(row).returns(row)
-    seq << @target.expects(:add_row).with(row)
-    seq << @target.expects(:flush)
+    seq << @writer.expects(:add_row).with(row)
+    seq << @writer.expects(:flush)
     m.run
   end
 
   test "updating a field" do
-    m = Ethel::Migration.new(@source, @target)
+    dataset = stub('dataset')
+    Ethel::Dataset.expects(:new).returns(dataset)
+    @reader.expects(:read).with(dataset)
+    m = Ethel::Migration.new(@reader, @writer)
 
     field = stub('field')
+    dataset.expects(:field).with('foo').returns(field)
     update_operation = stub('update operation')
     Ethel::Operations::Update.expects(:new).with(field, 123).
       returns(update_operation)
-    m.update(field, 123)
+    update_operation.expects(:setup).with(dataset)
+    m.update('foo', 123)
 
     seq = SequenceHelper.new('run sequence')
+
+    seq << @writer.expects(:prepare).with(dataset)
     row = stub('row')
-    seq << update_operation.expects(:before_transform).with(@source, @target)
-    seq << @target.expects(:prepare)
-    seq << @source.expects(:each).yields(row)
+    seq << @reader.expects(:each_row).yields(row)
     seq << update_operation.expects(:transform).with(row).returns(row)
-    seq << @target.expects(:add_row).with(row)
-    seq << @target.expects(:flush)
+    seq << @writer.expects(:add_row).with(row)
+    seq << @writer.expects(:flush)
     m.run
   end
 end

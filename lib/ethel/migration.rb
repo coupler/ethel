@@ -1,34 +1,37 @@
 module Ethel
   class Migration
-    def initialize(source, target)
-      @source = source
-      @target = target
+    def initialize(reader, writer)
+      @reader = reader
+      @writer = writer
       @operations = []
+
+      @dataset = Dataset.new
+      @reader.read(@dataset)
     end
 
-    def copy(field)
-      @operations << Operations::Copy.new(field)
+    def cast(field_name, type)
+      add_operation(Operations::Cast.new(@dataset.field(field_name), type))
     end
 
-    def cast(field, type)
-      @operations << Operations::Cast.new(field, type)
-    end
-
-    def update(field, *args, &block)
-      @operations << Operations::Update.new(field, *args, &block)
+    def update(field_name, *args, &block)
+      add_operation(Operations::Update.new(@dataset.field(field_name), *args, &block))
     end
 
     def run
-      @operations.each do |operation|
-        operation.before_transform(@source, @target)
-      end
-      @target.prepare
+      @writer.prepare(@dataset)
 
-      @source.each do |row|
+      @reader.each_row do |row|
         row = @operations.inject(row) { |r, op| op.transform(r) }
-        @target.add_row(row)
+        @writer.add_row(row)
       end
-      @target.flush
+      @writer.flush
+    end
+
+    protected
+
+    def add_operation(op)
+      op.setup(@dataset)
+      @operations << op
     end
   end
 end

@@ -5,7 +5,7 @@ class TestOperation < Test::Unit::TestCase
     Class.new(Ethel::Operation, &block)
   end
 
-  test "#before_transform chains child operations" do
+  test "#setup chains child operations" do
     child = stub('child operation')
     klass = new_subclass do
       define_method(:initialize) do |*args|
@@ -15,8 +15,9 @@ class TestOperation < Test::Unit::TestCase
     end
     op = klass.new
 
-    child.expects(:before_transform).with('foo', 'bar')
-    op.before_transform('foo', 'bar')
+    dataset = stub('dataset')
+    child.expects(:setup).with(dataset)
+    op.setup(dataset)
   end
 
   test "#transform chains child operations" do

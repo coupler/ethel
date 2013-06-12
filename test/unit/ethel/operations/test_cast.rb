@@ -12,40 +12,39 @@ module TestOperations
 
     def setup
       @original_field = stub('original field', :name => 'foo')
-      @new_field = stub('new field')
+      @new_field = stub('new field', :name => 'foo')
       Field.stubs(:new).returns(@new_field)
-      @child_operation = stub('child operation')
-      Operations::AddField.stubs(:new).returns(@child_operation)
     end
 
     test "subclass of Operation" do
       assert_equal Operation, Operations::Cast.superclass
     end
 
-    test "has AddField child operation with new field" do
-      Field.expects(:new).with('foo', :type => :integer).returns(@new_field)
-      Operations::AddField.expects(:new).with(@new_field).
-        returns(@child_operation)
+    test "alters field during setup callback" do
+      @original_field.stubs(:type).returns(:string)
 
+      Field.expects(:new).with('foo', :type => :integer).returns(@new_field)
+      @new_field.stubs(:type).returns(:integer)
       op = Operations::Cast.new(@original_field, :integer)
 
-      source = stub('source')
-      target = stub('target')
-      @child_operation.expects(:before_transform).with(source, target)
-      op.before_transform(source, target)
+      dataset = stub('dataset')
+      dataset.expects(:alter_field).with('foo', @new_field)
+      op.setup(dataset)
     end
 
     test "uses to_i when casting to integer" do
-      row = {'foo' => '123'}
+      @original_field.stubs(:type).returns(:string)
+      @new_field.stubs(:type).returns(:integer)
       op = Operations::Cast.new(@original_field, :integer)
-      @child_operation.stubs(:transform).with(row).returns(row)
+      row = {'foo' => '123'}
       assert_equal({'foo' => 123}, op.transform(row))
     end
 
     test "uses to_s when casting to string" do
-      row = {'foo' => 123}
+      @original_field.stubs(:type).returns(:integer)
+      @new_field.stubs(:type).returns(:string)
       op = Operations::Cast.new(@original_field, :string)
-      @child_operation.stubs(:transform).with(row).returns(row)
+      row = {'foo' => 123}
       assert_equal({'foo' => '123'}, op.transform(row))
     end
   end

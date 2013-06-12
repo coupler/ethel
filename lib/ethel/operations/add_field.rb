@@ -6,9 +6,9 @@ module Ethel
         @field = field
       end
 
-      def before_transform(source, target)
+      def setup(dataset)
         super
-        target.add_field(@field)
+        dataset.add_field(@field)
       end
     end
   end

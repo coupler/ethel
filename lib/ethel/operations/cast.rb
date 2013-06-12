@@ -4,21 +4,23 @@ module Ethel
       def initialize(field, new_type)
         super
         @original_field = field
-        @field_name = field.name
-        @new_type = new_type
-        @new_field = Field.new(@field_name, :type => @new_type)
-        add_child_operation(AddField.new(@new_field))
+        @new_field = Field.new(@original_field.name, :type => new_type)
+      end
+
+      def setup(dataset)
+        super
+        dataset.alter_field(@original_field.name, @new_field)
       end
 
       def transform(row)
         row = super(row)
 
-        row[@field_name] =
-          case @new_type
+        row[@original_field.name] =
+          case @new_field.type
           when :integer
-            row[@field_name].to_i
+            row[@original_field.name].to_i
           when :string
-            row[@field_name].to_s
+            row[@original_field.name].to_s
           end
 
         row

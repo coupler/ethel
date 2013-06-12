@@ -14,14 +14,13 @@ module TestOperations
       assert_equal Operation, Operations::AddField.superclass
     end
 
-    test "#before_transform calls Target#add_field" do
+    test "#setup calls Dataset#add_field" do
       field = stub('field')
       op = Operations::AddField.new(field)
 
-      source = stub('source')
-      target = stub('target')
-      target.expects(:add_field).with(field)
-      op.before_transform(source, target)
+      dataset = stub('source')
+      dataset.expects(:add_field).with(field)
+      op.setup(dataset)
     end
   end
 end
