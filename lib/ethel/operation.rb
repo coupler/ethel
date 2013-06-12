@@ -25,5 +25,6 @@ module Ethel
 end
 
 require 'ethel/operations/add_field'
+require 'ethel/operations/remove_field'
 require 'ethel/operations/cast'
 require 'ethel/operations/update'
