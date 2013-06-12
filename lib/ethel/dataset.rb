@@ -33,6 +33,10 @@ module Ethel
       end
     end
 
+    def field(name)
+      @fields[name]
+    end
+
     def each_field(&block)
       @fields.each_value(&block)
     end

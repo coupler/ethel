@@ -76,4 +76,15 @@ class TestDataset < Test::Unit::TestCase
     end
     assert_equal([field_1, field_2], actual_fields)
   end
+
+  test "#field" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    assert_equal field_1, dataset.field('foo')
+    assert_equal field_2, dataset.field('bar')
+  end
 end
