@@ -62,4 +62,18 @@ class TestDataset < Test::Unit::TestCase
     field_3 = stub('field', :name => 'foo', :type => :date)
     dataset.alter_field('foo', field_3)
   end
+
+  test "#each_field" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    actual_fields = []
+    dataset.each_field do |field|
+      actual_fields << field
+    end
+    assert_equal([field_1, field_2], actual_fields)
+  end
 end

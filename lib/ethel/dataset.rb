@@ -32,5 +32,9 @@ module Ethel
         @fields[name] = new_field
       end
     end
+
+    def each_field(&block)
+      @fields.each_value(&block)
+    end
   end
 end
