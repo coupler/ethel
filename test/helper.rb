@@ -27,3 +27,19 @@ class SequenceHelper
     expectation.in_sequence(@seq)
   end
 end
+
+module ConstantsHelper
+  module ClassMethods
+    def const_missing(name)
+      if Ethel.const_defined?(name)
+        Ethel.const_get(name)
+      else
+        super
+      end
+    end
+  end
+
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+end

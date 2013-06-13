@@ -2,13 +2,7 @@ require 'helper'
 
 module TestReaders
   class TestCSV < Test::Unit::TestCase
-    def self.const_missing(name)
-      if Ethel.const_defined?(name)
-        Ethel.const_get(name)
-      else
-        super
-      end
-    end
+    include ConstantsHelper
 
     test "subclass of Reader" do
       assert_equal Reader, Readers::CSV.superclass

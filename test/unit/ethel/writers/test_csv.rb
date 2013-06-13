@@ -2,13 +2,7 @@ require 'helper'
 
 module TestWriters
   class TestCSV < Test::Unit::TestCase
-    def self.const_missing(name)
-      if Ethel.const_defined?(name)
-        Ethel.const_get(name)
-      else
-        super
-      end
-    end
+    include ConstantsHelper
 
     test "subclass of Writer" do
       assert_equal Writer, Writers::CSV.superclass

@@ -2,13 +2,7 @@ require 'helper'
 
 module TestOperations
   class TestSelect < Test::Unit::TestCase
-    def self.const_missing(name)
-      if Ethel.const_defined?(name)
-        Ethel.const_get(name)
-      else
-        super
-      end
-    end
+    include ConstantsHelper
 
     test "subclass of Operation" do
       assert_equal Operation, Operations::Select.superclass

@@ -2,13 +2,7 @@ require 'helper'
 
 module TestOperations
   class TestUpdate < Test::Unit::TestCase
-    def self.const_missing(name)
-      if Ethel.const_defined?(name)
-        Ethel.const_get(name)
-      else
-        super
-      end
-    end
+    include ConstantsHelper
 
     def setup
       @field = stub('field', :name => 'foo', :type => :integer)
