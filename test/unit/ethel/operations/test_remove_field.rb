@@ -15,12 +15,15 @@ module TestOperations
     end
 
     test "#setup calls Dataset#remove_field" do
-      field = stub('field', :name => 'foo')
-      op = Operations::RemoveField.new(field)
+      op = Operations::RemoveField.new('foo')
 
       dataset = stub('dataset')
       dataset.expects(:remove_field).with('foo')
       op.setup(dataset)
+    end
+
+    test "registers itself" do
+      assert_equal Operations::RemoveField, Operation.operation('remove_field')
     end
   end
 end

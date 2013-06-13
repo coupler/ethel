@@ -14,10 +14,8 @@ class TestMigration < Test::Unit::TestCase
     @reader.expects(:read).with(dataset)
     m = Ethel::Migration.new(@reader, @writer)
 
-    field = stub('field', :name => 'foo')
-    dataset.expects(:field).with('foo').returns(field)
     cast_operation = stub('cast operation')
-    Ethel::Operations::Cast.expects(:new).with(field, :integer).
+    Ethel::Operations::Cast.expects(:new).with('foo', :integer).
       returns(cast_operation)
     cast_operation.expects(:setup).with(dataset)
     m.cast('foo', :integer)
@@ -39,10 +37,8 @@ class TestMigration < Test::Unit::TestCase
     @reader.expects(:read).with(dataset)
     m = Ethel::Migration.new(@reader, @writer)
 
-    field = stub('field')
-    dataset.expects(:field).with('foo').returns(field)
     update_operation = stub('update operation')
-    Ethel::Operations::Update.expects(:new).with(field, 123).
+    Ethel::Operations::Update.expects(:new).with('foo', 123).
       returns(update_operation)
     update_operation.expects(:setup).with(dataset)
     m.update('foo', 123)
@@ -64,12 +60,8 @@ class TestMigration < Test::Unit::TestCase
     @reader.expects(:read).with(dataset)
     m = Ethel::Migration.new(@reader, @writer)
 
-    field_1 = stub('field 1')
-    dataset.expects(:field).with('foo').returns(field_1)
-    field_2 = stub('field 2')
-    dataset.expects(:field).with('bar').returns(field_2)
     select_operation = stub('select operation')
-    Ethel::Operations::Select.expects(:new).with(field_1, field_2).
+    Ethel::Operations::Select.expects(:new).with('foo', 'bar').
       returns(select_operation)
     select_operation.expects(:setup).with(dataset)
     m.select('foo', 'bar')

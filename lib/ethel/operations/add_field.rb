@@ -1,15 +1,18 @@
 module Ethel
   module Operations
     class AddField < Operation
-      def initialize(field)
+      def initialize(name, type)
         super
-        @field = field
+        @name = name
+        @type = type
       end
 
       def setup(dataset)
         super
-        dataset.add_field(@field)
+        dataset.add_field(Field.new(@name, :type => @type))
       end
+
+      register('add_field', self)
     end
   end
 end

@@ -1,30 +1,33 @@
 module Ethel
   module Operations
     class Cast < Operation
-      def initialize(field, new_type)
+      def initialize(name, new_type)
         super
-        @original_field = field
-        @new_field = Field.new(@original_field.name, :type => new_type)
+        @name = name
+        @new_type = new_type
       end
 
       def setup(dataset)
         super
-        dataset.alter_field(@original_field.name, @new_field)
+        new_field = Field.new(@name, :type => @new_type)
+        dataset.alter_field(@name, new_field)
       end
 
       def transform(row)
         row = super(row)
 
-        row[@original_field.name] =
-          case @new_field.type
+        row[@name] =
+          case @new_type
           when :integer
-            row[@original_field.name].to_i
+            row[@name].to_i
           when :string
-            row[@original_field.name].to_s
+            row[@name].to_s
           end
 
         row
       end
+
+      register('cast', self)
     end
   end
 end

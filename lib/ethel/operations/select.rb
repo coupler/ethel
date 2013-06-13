@@ -1,9 +1,9 @@
 module Ethel
   module Operations
     class Select < Operation
-      def initialize(*fields)
+      def initialize(*names)
         super
-        @fields = fields
+        @names = names
       end
 
       def setup(dataset)
@@ -11,7 +11,7 @@ module Ethel
 
         remove = []
         dataset.each_field do |field|
-          if @fields.detect { |f| f.name == field.name}.nil?
+          if @names.index(field.name).nil?
             remove << field.name
           end
         end
@@ -19,6 +19,8 @@ module Ethel
           dataset.remove_field(name)
         end
       end
+
+      register('select', self)
     end
   end
 end

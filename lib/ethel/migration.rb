@@ -9,19 +9,6 @@ module Ethel
       @reader.read(@dataset)
     end
 
-    def select(*field_names)
-      fields = field_names.collect { |name| @dataset.field(name) }
-      add_operation(Operations::Select.new(*fields))
-    end
-
-    def cast(field_name, type)
-      add_operation(Operations::Cast.new(@dataset.field(field_name), type))
-    end
-
-    def update(field_name, *args, &block)
-      add_operation(Operations::Update.new(@dataset.field(field_name), *args, &block))
-    end
-
     def run
       @writer.prepare(@dataset)
 
@@ -30,6 +17,16 @@ module Ethel
         @writer.add_row(row)
       end
       @writer.flush
+    end
+
+    def method_missing(name, *args, &block)
+      klass = Operation.operation(name.to_s)
+      if klass
+        op = klass.new(*args, &block)
+        add_operation(op)
+      else
+        super
+      end
     end
 
     protected

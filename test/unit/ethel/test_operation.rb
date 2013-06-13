@@ -1,8 +1,22 @@
 require 'helper'
 
 class TestOperation < Test::Unit::TestCase
+  def setup
+    @original_operations = Ethel::Operation.class_variable_get(:@@operations)
+  end
+
+  def teardown
+    Ethel::Operation.class_variable_set(:@@operations, @original_operations)
+  end
+
   def new_subclass(&block)
     Class.new(Ethel::Operation, &block)
+  end
+
+  test "registering an operation" do
+    klass = new_subclass
+    Ethel::Operation.register('foo', klass)
+    assert_equal klass, Ethel::Operation.operation('foo')
   end
 
   test "#setup chains child operations" do

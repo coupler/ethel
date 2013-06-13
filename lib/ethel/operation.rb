@@ -1,5 +1,14 @@
 module Ethel
   class Operation
+    @@operations = {}
+    def self.register(name, klass)
+      @@operations[name] = klass
+    end
+
+    def self.operation(name)
+      @@operations[name]
+    end
+
     def initialize(*args)
       @child_operations = []
     end

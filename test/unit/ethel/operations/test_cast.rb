@@ -11,7 +11,6 @@ module TestOperations
     end
 
     def setup
-      @original_field = stub('original field', :name => 'foo')
       @new_field = stub('new field', :name => 'foo')
       Field.stubs(:new).returns(@new_field)
     end
@@ -21,31 +20,29 @@ module TestOperations
     end
 
     test "alters field during setup callback" do
-      @original_field.stubs(:type).returns(:string)
+      op = Operations::Cast.new('foo', :integer)
 
       Field.expects(:new).with('foo', :type => :integer).returns(@new_field)
       @new_field.stubs(:type).returns(:integer)
-      op = Operations::Cast.new(@original_field, :integer)
-
       dataset = stub('dataset')
       dataset.expects(:alter_field).with('foo', @new_field)
       op.setup(dataset)
     end
 
     test "uses to_i when casting to integer" do
-      @original_field.stubs(:type).returns(:string)
-      @new_field.stubs(:type).returns(:integer)
-      op = Operations::Cast.new(@original_field, :integer)
+      op = Operations::Cast.new('foo', :integer)
       row = {'foo' => '123'}
       assert_equal({'foo' => 123}, op.transform(row))
     end
 
     test "uses to_s when casting to string" do
-      @original_field.stubs(:type).returns(:integer)
-      @new_field.stubs(:type).returns(:string)
-      op = Operations::Cast.new(@original_field, :string)
+      op = Operations::Cast.new('foo', :string)
       row = {'foo' => 123}
       assert_equal({'foo' => '123'}, op.transform(row))
+    end
+
+    test "registers itself" do
+      assert_equal Operations::Cast, Operation.operation('cast')
     end
   end
 end

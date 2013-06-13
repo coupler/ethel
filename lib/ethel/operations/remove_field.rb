@@ -1,15 +1,17 @@
 module Ethel
   module Operations
     class RemoveField < Operation
-      def initialize(field)
+      def initialize(name)
         super
-        @field = field
+        @name = name
       end
 
       def setup(dataset)
         super
-        dataset.remove_field(@field.name)
+        dataset.remove_field(@name)
       end
+
+      register('remove_field', self)
     end
   end
 end

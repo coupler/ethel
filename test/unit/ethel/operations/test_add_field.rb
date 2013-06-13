@@ -15,12 +15,17 @@ module TestOperations
     end
 
     test "#setup calls Dataset#add_field" do
-      field = stub('field')
-      op = Operations::AddField.new(field)
+      op = Operations::AddField.new('foo', :integer)
 
+      field = stub('field')
+      Field.expects(:new).with('foo', :type => :integer).returns(field)
       dataset = stub('source')
       dataset.expects(:add_field).with(field)
       op.setup(dataset)
+    end
+
+    test "registers itself" do
+      assert_equal Operations::AddField, Operation.operation('add_field')
     end
   end
 end
