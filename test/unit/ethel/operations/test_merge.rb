@@ -36,5 +36,9 @@ module TestOperations
       assert_equal({'id' => 1, 'bar' => 123, 'foo' => 'one'},
         op.transform({'id' => 1, 'foo' => 'one'}))
     end
+
+    test "registers itself" do
+      assert_equal Operations::Merge, Operation.operation('merge')
+    end
   end
 end

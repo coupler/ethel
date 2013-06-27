@@ -32,6 +32,8 @@ module Ethel
 
         row
       end
+
+      register('merge', self)
     end
   end
 end
