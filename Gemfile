@@ -8,4 +8,5 @@ group :development do
   gem 'mocha'
   gem 'guard-test'
   gem 'rb-inotify', '~> 0.9'
+  gem 'simplecov'
 end
