@@ -1,12 +1,13 @@
 require 'helper'
 
 class TestSelectMigration < Test::Unit::TestCase
-  test "selecting fields from csv to csv" do
-    reader = Ethel::Readers::CSV.new(:string => "foo,bar,baz\nstuff,123,junk")
-    writer = Ethel::Writers::CSV.new(:string => true)
-    migration = Ethel::Migration.new(reader, writer)
-    migration.select('foo', 'baz')
-    migration.run
-    assert_equal "foo,baz\nstuff,junk\n", writer.data
+  include IntegrationHelper
+
+  io_test "selecting fields" do
+    data = [{'foo' => 'stuff', 'bar' => '123', 'baz' => 'junk'}]
+    expected = [{'foo' => 'stuff', 'baz' => 'junk'}]
+    migrate(data, expected) do |m|
+      m.select('foo', 'baz')
+    end
   end
 end

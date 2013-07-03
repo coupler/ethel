@@ -1,30 +1,41 @@
 require 'helper'
 
 class TestUpdateMigration < Test::Unit::TestCase
-  test "update a field's values" do
-    reader = Ethel::Readers::CSV.new(:string => "foo,bar\nstuff,123")
-    writer = Ethel::Writers::CSV.new(:string => true)
-    migration = Ethel::Migration.new(reader, writer)
-    migration.update('foo', '456')
-    migration.run
-    assert_equal "foo,bar\n456,123\n", writer.data
+  include IntegrationHelper
+
+  io_test "update a field's values" do
+    data = [{'foo' => 'stuff', 'bar' => '123'}]
+    expected = [{'foo' => '456', 'bar' => '123'}]
+    migrate(data, expected) do |m|
+      m.update('foo', '456')
+    end
   end
 
-  test "update a field's value with filter" do
-    reader = Ethel::Readers::CSV.new(:string => "foo,bar\n123,baz\n456,baz")
-    writer = Ethel::Writers::CSV.new(:string => true)
-    migration = Ethel::Migration.new(reader, writer)
-    migration.update('foo', '321') { |v| v.to_i > 200 }
-    migration.run
-    assert_equal "foo,bar\n123,baz\n321,baz\n", writer.data
+  io_test "update a field's values with filter" do
+    data = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '456', 'bar' => 'baz'}
+    ]
+    expected = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '321', 'bar' => 'baz'}
+    ]
+    migrate(data, expected) do |m|
+      m.update('foo', '321') { |v| v.to_i > 200 }
+    end
   end
 
-  test "update a field's value with block" do
-    reader = Ethel::Readers::CSV.new(:string => "foo,bar\n123,baz\n456,baz")
-    writer = Ethel::Writers::CSV.new(:string => true)
-    migration = Ethel::Migration.new(reader, writer)
-    migration.update('foo') { |v| v.to_i > 200 ? '321' : v }
-    migration.run
-    assert_equal "foo,bar\n123,baz\n321,baz\n", writer.data
+  io_test "update a field's value with block" do
+    data = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '456', 'bar' => 'baz'}
+    ]
+    expected = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '321', 'bar' => 'baz'}
+    ]
+    migrate(data, expected) do |m|
+      m.update('foo') { |v| v.to_i > 200 ? '321' : v }
+    end
   end
 end

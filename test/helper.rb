@@ -46,3 +46,71 @@ module ConstantsHelper
     base.extend(ClassMethods)
   end
 end
+
+module IntegrationHelper
+  module ClassMethods
+    IO_TYPES = %w{memory csv}
+
+    def io_test(desc, *combinations, &block)
+      if combinations.empty?
+        combinations = IO_TYPES.product(IO_TYPES)
+      end
+      combinations.each do |(read_type, write_type)|
+        desc2 = "#{desc} (#{read_type} to #{write_type})"
+        test(desc2, &block)
+        method_name = added_methods.last
+        attribute(:read_type, read_type, {}, method_name)
+        attribute(:write_type, write_type, {}, method_name)
+      end
+    end
+  end
+
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+
+  def get_reader(type, data)
+    case type
+    when 'memory'
+      Ethel::Readers::Memory.new(data)
+    when 'csv'
+      Ethel::Readers::CSV.new(:string => data)
+    else
+      raise "invalid reader type: #{type.inspect}"
+    end
+  end
+
+  def get_writer(type)
+    case type
+    when 'memory'
+      Ethel::Writers::Memory.new
+    when 'csv'
+      Ethel::Writers::CSV.new(:string => true)
+    else
+      raise "invalid writer type: #{type.inspect}"
+    end
+  end
+
+  def convert_rows(rows, from, to)
+    if from == to
+      rows
+    else
+      reader = get_reader(from, rows)
+      writer = get_writer(to)
+      Ethel::Migration.new(reader, writer).run
+      writer.data
+    end
+  end
+
+  def migrate(data, expected, read_type = self[:read_type], write_type = self[:write_type])
+    rows = convert_rows(data, 'memory', read_type)
+    reader = get_reader(read_type, rows)
+    writer = get_writer(write_type)
+    migration = Ethel::Migration.new(reader, writer)
+    yield migration
+    migration.run
+
+    actual = convert_rows(writer.data, write_type, 'memory')
+    assert_equal expected, actual
+  end
+end

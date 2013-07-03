@@ -1,13 +1,21 @@
 require 'helper'
 
 class TestCastMigration < Test::Unit::TestCase
-  test "casting integer from csv to csv" do
-    reader = Ethel::Readers::CSV.new(:string => "foo,bar\nstuff,123")
-    writer = Ethel::Writers::CSV.new(:string => true)
-    migration = Ethel::Migration.new(reader, writer)
-    migration.cast('foo', :integer)
-    migration.cast('bar', :integer)
-    migration.run
-    assert_equal "foo,bar\n0,123\n", writer.data
+  include IntegrationHelper
+
+  io_test("casting string to integer", %w{memory memory}, %w{csv memory}) do
+    data = [{'foo' => '456'}]
+    expected = [{'foo' => 456}]
+    migrate(data, expected) do |m|
+      m.cast('foo', :integer)
+    end
+  end
+
+  io_test("casting integer to string", %w{memory memory}, %w{memory csv}) do
+    data = [{'foo' => 456}]
+    expected = [{'foo' => '456'}]
+    migrate(data, expected) do |m|
+      m.cast('foo', :string)
+    end
   end
 end
