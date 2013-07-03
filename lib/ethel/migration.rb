@@ -37,6 +37,7 @@ module Ethel
 
           reader.each_row do |row|
             row = op.transform(row)
+            @dataset.validate_row(row)
             writer.add_row(row)
           end
           writer.flush

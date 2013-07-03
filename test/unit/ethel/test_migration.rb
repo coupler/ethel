@@ -40,6 +40,7 @@ class TestMigration < Test::Unit::TestCase
     row = stub('row')
     seq << @reader.expects(:each_row).yields(row)
     seq << cast_operation.expects(:transform).with(row).returns(row)
+    seq << dataset.expects(:validate_row).with(row)
     seq << @writer.expects(:add_row).with(row)
     seq << @writer.expects(:flush)
     m.run
@@ -74,6 +75,7 @@ class TestMigration < Test::Unit::TestCase
     seq << memwriter.expects(:prepare).with(dataset)
     seq << @reader.expects(:each_row).yields(row)
     seq << cast_operation_1.expects(:transform).with(row).returns(new_row)
+    seq << dataset.expects(:validate_row).with(new_row)
     seq << memwriter.expects(:add_row).with(new_row)
     seq << memwriter.expects(:flush)
 
@@ -84,6 +86,7 @@ class TestMigration < Test::Unit::TestCase
     seq << @writer.expects(:prepare).with(dataset)
     seq << memreader.expects(:each_row).yields(row)
     seq << cast_operation_2.expects(:transform).with(row).returns(new_row)
+    seq << dataset.expects(:validate_row).with(new_row)
     seq << @writer.expects(:add_row).with(new_row)
     seq << @writer.expects(:flush)
 
@@ -108,6 +111,7 @@ class TestMigration < Test::Unit::TestCase
     row = stub('row')
     seq << @reader.expects(:each_row).yields(row)
     seq << update_operation.expects(:transform).with(row).returns(row)
+    seq << dataset.expects(:validate_row).with(row)
     seq << @writer.expects(:add_row).with(row)
     seq << @writer.expects(:flush)
     m.run
@@ -131,6 +135,7 @@ class TestMigration < Test::Unit::TestCase
     row = stub('row')
     seq << @reader.expects(:each_row).yields(row)
     seq << select_operation.expects(:transform).with(row).returns(row)
+    seq << dataset.expects(:validate_row).with(row)
     seq << @writer.expects(:add_row).with(row)
     seq << @writer.expects(:flush)
     m.run
