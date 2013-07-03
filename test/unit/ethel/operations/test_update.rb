@@ -21,22 +21,34 @@ module TestOperations
       assert_equal({'id' => 1, 'foo' => 456, 'bar' => "baz"}, op.transform(row))
     end
 
-    test "update a field's value with filter" do
-      row_1 = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
-      row_2 = {'id' => 2, 'foo' => 456, 'bar' => 'baz'}
-      op = Operations::Update.new('foo', 321) { |v| v > 200 }
+    test "update a field's value with filter that returns true" do
+      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
+      op = Operations::Update.new('foo', 321) do |op_row|
+        assert_equal(row, op_row)
+        true
+      end
       op.setup(@dataset)
-      assert_equal(row_1, op.transform(row_1.dup))
-      assert_equal({'id' => 2, 'foo' => 321, 'bar' => 'baz'}, op.transform(row_2))
+      assert_equal(row.merge('foo' => 321), op.transform(row.dup))
+    end
+
+    test "update a field's value with filter that returns false" do
+      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
+      op = Operations::Update.new('foo', 321) do |op_row|
+        assert_equal(row, op_row)
+        false
+      end
+      op.setup(@dataset)
+      assert_equal(row, op.transform(row.dup))
     end
 
     test "update a field's value with block" do
-      row_1 = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
-      row_2 = {'id' => 2, 'foo' => 456, 'bar' => 'baz'}
-      op = Operations::Update.new('foo') { |v| v > 200 ? 321 : v }
+      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
+      op = Operations::Update.new('foo') do |op_row|
+        assert_equal(row, op_row)
+        321
+      end
       op.setup(@dataset)
-      assert_equal(row_1, op.transform(row_1.dup))
-      assert_equal({'id' => 2, 'foo' => 321, 'bar' => 'baz'}, op.transform(row_2))
+      assert_equal(row.merge('foo' => 321), op.transform(row.dup))
     end
 
     test "update a field's values with wrong type" do

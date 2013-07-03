@@ -21,7 +21,7 @@ class TestUpdateMigration < Test::Unit::TestCase
       {'foo' => '321', 'bar' => 'baz'}
     ]
     migrate(data, expected) do |m|
-      m.update('foo', '321') { |v| v.to_i > 200 }
+      m.update('foo', '321') { |row| row['foo'].to_i > 200 }
     end
   end
 
@@ -35,7 +35,7 @@ class TestUpdateMigration < Test::Unit::TestCase
       {'foo' => '321', 'bar' => 'baz'}
     ]
     migrate(data, expected) do |m|
-      m.update('foo') { |v| v.to_i > 200 ? '321' : v }
+      m.update('foo') { |row| row['foo'].to_i > 200 ? '321' : row['foo'] }
     end
   end
 end
