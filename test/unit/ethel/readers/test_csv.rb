@@ -8,6 +8,12 @@ module TestReaders
       assert_equal Reader, Readers::CSV.superclass
     end
 
+    test "initialize with invalid options" do
+      assert_raises do
+        Readers::CSV.new({})
+      end
+    end
+
     test "#read from string" do
       csv = Readers::CSV.new(:string => "foo,bar\n1,2")
       dataset = stub('dataset')

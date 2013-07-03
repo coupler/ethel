@@ -1,7 +1,10 @@
 module Ethel
   module Readers
     class CSV < Reader
-      def initialize(options = {})
+      def initialize(options)
+        if !options.has_key?(:string) && !options.has_key?(:file)
+          raise "either the :file or :string option must be specified"
+        end
         @options = options
       end
 

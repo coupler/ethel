@@ -8,6 +8,12 @@ module TestWriters
       assert_equal Writer, Writers::CSV.superclass
     end
 
+    test "initialize with invalid options" do
+      assert_raises do
+        Writers::CSV.new({})
+      end
+    end
+
     test "output to file" do
       file = Tempfile.new('csv')
       csv = Writers::CSV.new(:file => file.path)
