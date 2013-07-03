@@ -18,7 +18,7 @@ module TestOperations
       row = {'id' => 1, 'foo' => 123, 'bar' => "baz"}
       op = Operations::Update.new('foo', 456)
       op.setup(@dataset)
-      assert_equal({'id' => 1, 'foo' => 456, 'bar' => "baz"}, op.transform(row))
+      assert_equal(row.merge('foo' => 456), op.transform(row.dup))
     end
 
     test "update a field's value with filter that returns true" do
@@ -73,19 +73,12 @@ module TestOperations
       end
     end
 
-    test "update a field's value with block with wrong type" do
+    test "update a field's whole row" do
       row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
-      op = Operations::Update.new('foo') { |v| "foo" }
-      op.setup(@dataset)
-      assert_raises(InvalidFieldType) do
-        op.transform(row)
+      op = Operations::Update.new do |row|
+        row['foo'] = 456
       end
-    end
-
-    test "update a field's value with block with nil" do
-      row = {'id' => 1, 'foo' => 123, 'bar' => 'baz'}
-      op = Operations::Update.new('foo') { |v| nil }
-      assert_equal({'id' => 1, 'foo' => nil, 'bar' => 'baz'}, op.transform(row))
+      assert_equal(row.merge('foo' => 456), op.transform(row.dup))
     end
 
     test "registers itself" do

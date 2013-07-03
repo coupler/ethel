@@ -38,4 +38,22 @@ class TestUpdateMigration < Test::Unit::TestCase
       m.update('foo') { |row| row['foo'].to_i > 200 ? '321' : row['foo'] }
     end
   end
+
+  io_test "update a field's whole row" do
+    data = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '456', 'bar' => 'baz'}
+    ]
+    expected = [
+      {'foo' => '123', 'bar' => 'baz'},
+      {'foo' => '321', 'bar' => 'baz'}
+    ]
+    migrate(data, expected) do |m|
+      m.update do |row|
+        if row['foo'].to_i > 200
+          row['foo'] = '321'
+        end
+      end
+    end
+  end
 end
