@@ -40,5 +40,41 @@ module Ethel
     def each_field(&block)
       @fields.each_value(&block)
     end
+
+    def validate_row(row)
+      keys = row.keys
+      missing = nil
+      invalid = nil
+      each_field do |field|
+        if keys.delete(field.name).nil?
+          # field is missing from row
+          missing ||= []
+          missing << field.name
+        else
+          # check field type
+          type = Util.type_of(row[field.name])
+          if field.type != type
+            invalid ||= []
+            invalid << "'#{field.name}' (expected #{field.type}, got #{type})"
+          end
+        end
+      end
+
+      errors = nil
+      unless missing.nil?
+        errors = ["missing fields: #{missing.join(", ")}"]
+      end
+      unless keys.empty?
+        errors ||= []
+        errors << "extra fields: #{keys.join(", ")}"
+      end
+      unless invalid.nil?
+        errors ||= []
+        errors << "invalid values: #{invalid.join(", ")}"
+      end
+      unless errors.nil?
+        raise InvalidRow, errors.join("; ")
+      end
+    end
   end
 end

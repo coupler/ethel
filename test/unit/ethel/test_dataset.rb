@@ -87,4 +87,40 @@ class TestDataset < Test::Unit::TestCase
     assert_equal field_1, dataset.field('foo')
     assert_equal field_2, dataset.field('bar')
   end
+
+  test "#validate_row raises exception for missing column" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    assert_raises(Ethel::InvalidRow) do
+      dataset.validate_row({'foo' => 123})
+    end
+  end
+
+  test "#validate_row raises exception for extra column" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    assert_raises(Ethel::InvalidRow) do
+      dataset.validate_row({'foo' => 123, 'bar' => 'blah', 'baz' => 456})
+    end
+  end
+
+  test "#validate_row raises exception for column with wrong type" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    assert_raises(Ethel::InvalidRow) do
+      dataset.validate_row({'foo' => 'string', 'bar' => 'blah'})
+    end
+  end
 end

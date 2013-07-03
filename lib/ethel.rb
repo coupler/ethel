@@ -14,4 +14,5 @@ module Ethel
   class InvalidFieldType < Exception; end
   class InvalidFieldName < Exception; end
   class NonexistentField < Exception; end
+  class InvalidRow < Exception; end
 end
