@@ -9,6 +9,9 @@ module Ethel
       def prepare(dataset)
         dataset.each_field do |field|
           @field_names << field.name
+          if field.type != :string
+            warn "CSV WARNING: implicit conversion from #{field.type} to string for field '#{field.name}'"
+          end
         end
         csv_options = { :headers => @field_names, :write_headers => true }
         @csv =
