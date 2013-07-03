@@ -26,7 +26,8 @@ module Ethel
           end
         end
         fields.each_pair do |name, type|
-          dataset.add_field(Field.new(name, type))
+          field = Field.new(name, :type => type)
+          dataset.add_field(field)
         end
       end
 

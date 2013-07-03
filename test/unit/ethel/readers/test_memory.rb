@@ -13,7 +13,7 @@ module TestReaders
 
       dataset = stub('dataset')
       field = stub('field')
-      Field.expects(:new).with('foo', :integer).returns(field)
+      Field.expects(:new).with('foo', :type => :integer).returns(field)
       dataset.expects(:add_field).with(field)
       reader.read(dataset)
     end
