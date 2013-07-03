@@ -23,6 +23,14 @@ module TestOperations
       op.setup(dataset)
     end
 
+    test "#transform removes fields" do
+      row = {'foo' => 123, 'bar' => 456, 'baz' => 789}
+      op = Operations::Select.new('foo', 'bar')
+      expected = row.reject { |k, v| k == 'baz' }
+      actual = op.transform(row.dup)
+      assert_equal(expected, actual)
+    end
+
     test "registers itself" do
       assert_equal Operations::Select, Operation.operation('select')
     end

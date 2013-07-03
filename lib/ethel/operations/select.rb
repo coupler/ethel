@@ -20,6 +20,11 @@ module Ethel
         end
       end
 
+      def transform(row)
+        row = super(row)
+        row.keep_if { |k, v| @names.include?(k) }
+      end
+
       register('select', self)
     end
   end
