@@ -84,7 +84,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::Update, Operation.operation('update')
+      assert_equal Operations::Update, Operation['update']
     end
   end
 end

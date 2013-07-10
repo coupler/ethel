@@ -50,7 +50,7 @@ module Ethel
     end
 
     def method_missing(name, *args, &block)
-      klass = Operation.operation(name.to_s)
+      klass = Operation[name.to_s]
       if klass
         op = klass.new(*args, &block)
         add_operation(op)

@@ -19,7 +19,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::AddField, Operation.operation('add_field')
+      assert_equal Operations::AddField, Operation['add_field']
     end
   end
 end

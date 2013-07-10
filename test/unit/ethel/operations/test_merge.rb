@@ -52,7 +52,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::Merge, Operation.operation('merge')
+      assert_equal Operations::Merge, Operation['merge']
     end
   end
 end

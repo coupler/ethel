@@ -31,7 +31,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::Rename, Operation.operation('rename')
+      assert_equal Operations::Rename, Operation['rename']
     end
   end
 end

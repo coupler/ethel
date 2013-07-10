@@ -17,7 +17,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::RemoveField, Operation.operation('remove_field')
+      assert_equal Operations::RemoveField, Operation['remove_field']
     end
   end
 end

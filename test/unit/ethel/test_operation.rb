@@ -16,7 +16,7 @@ class TestOperation < Test::Unit::TestCase
   test "registering an operation" do
     klass = new_subclass
     Ethel::Operation.register('foo', klass)
-    assert_equal klass, Ethel::Operation.operation('foo')
+    assert_equal klass, Ethel::Operation['foo']
   end
 
   test "#setup chains child operations" do

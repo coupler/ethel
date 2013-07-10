@@ -5,7 +5,7 @@ module Ethel
       @@operations[name] = klass
     end
 
-    def self.operation(name)
+    def self.[](name)
       @@operations[name]
     end
 

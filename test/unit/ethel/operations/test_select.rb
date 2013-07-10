@@ -32,7 +32,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::Select, Operation.operation('select')
+      assert_equal Operations::Select, Operation['select']
     end
   end
 end

@@ -36,7 +36,7 @@ module TestOperations
     end
 
     test "registers itself" do
-      assert_equal Operations::Cast, Operation.operation('cast')
+      assert_equal Operations::Cast, Operation['cast']
     end
   end
 end
