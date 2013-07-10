@@ -1,19 +1,20 @@
 module Ethel
   module Readers
     class CSV < Reader
-      def initialize(options)
+      def initialize(options, csv_options = {})
         if !options.has_key?(:string) && !options.has_key?(:file)
           raise "either the :file or :string option must be specified"
         end
         @options = options
+        @csv_options = csv_options
       end
 
       def read(dataset)
         field_names = nil
         if @options[:string]
-          field_names = ::CSV.parse_line(@options[:string])
+          field_names = ::CSV.parse_line(@options[:string], @csv_options.merge(:headers => false))
         elsif @options[:file]
-          ::CSV.open(@options[:file]) do |csv|
+          ::CSV.open(@options[:file], @csv_options.merge(:headers => false)) do |csv|
             field_names = csv.shift
           end
         end
@@ -28,9 +29,9 @@ module Ethel
       def each_row
         csv =
           if @options[:string]
-            ::CSV.new(@options[:string], :headers => true)
+            ::CSV.new(@options[:string], @csv_options.merge(:headers => true))
           elsif @options[:file]
-            ::CSV.open(@options[:file], :headers => true)
+            ::CSV.open(@options[:file], @csv_options.merge(:headers => true))
           end
         begin
           csv.each do |row|

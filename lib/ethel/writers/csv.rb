@@ -1,11 +1,12 @@
 module Ethel
   module Writers
     class CSV < Writer
-      def initialize(options)
+      def initialize(options, csv_options = {})
         if !options.has_key?(:string) && !options.has_key?(:file)
           raise "either the :file or :string option must be specified"
         end
         @options = options
+        @csv_options = csv_options
         @field_names = []
       end
 
@@ -16,7 +17,9 @@ module Ethel
             warn "CSV WARNING: implicit conversion from #{field.type} to string for field '#{field.name}'"
           end
         end
-        csv_options = { :headers => @field_names, :write_headers => true }
+        csv_options = @csv_options.merge({
+          :headers => @field_names, :write_headers => true
+        })
         @csv =
           if @options[:file]
             ::CSV.open(@options[:file], 'wb', csv_options)
