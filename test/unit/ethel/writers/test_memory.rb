@@ -19,5 +19,9 @@ module TestWriters
       writer.add_row({'foo' => '123', 'bar' => '456'})
       assert_equal [{'foo' => '123', 'bar' => '456'}], writer.data
     end
+
+    test "registers itself" do
+      assert_equal Writers::Memory, Writer['memory']
+    end
   end
 end

@@ -43,5 +43,9 @@ module TestWriters
 
       assert_equal "foo,bar\n123,456\n", csv.data
     end
+
+    test "registers itself" do
+      assert_equal Writers::CSV, Writer['csv']
+    end
   end
 end

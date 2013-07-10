@@ -42,6 +42,8 @@ module Ethel
           @data
         end
       end
+
+      register('csv', self)
     end
   end
 end

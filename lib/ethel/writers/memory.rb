@@ -19,6 +19,8 @@ module Ethel
       def data
         @data
       end
+
+      register('memory', self)
     end
   end
 end
