@@ -18,7 +18,7 @@ module TestOperations
     test "alters field during setup callback" do
       op = Operations::Rename.new('foo', 'bar')
 
-      @dataset.expects(:field).with('foo').returns(@field)
+      @dataset.expects(:field).with('foo', true).returns(@field)
       Field.expects(:new).with('bar', :type => :string).returns(@new_field)
       @dataset.expects(:alter_field).with('foo', @new_field)
       op.setup(@dataset)

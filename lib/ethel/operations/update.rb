@@ -20,7 +20,7 @@ module Ethel
       def setup(dataset)
         super
         if @name
-          @field = dataset.field(@name)
+          @field = dataset.field(@name, true)
           if @static && !@value.nil?
             value_type = Util.type_of(@value)
             if !(@field.type == :blob && value_type == :string) && value_type != @field.type

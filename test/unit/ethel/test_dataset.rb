@@ -88,6 +88,16 @@ class TestDataset < Test::Unit::TestCase
     assert_equal field_2, dataset.field('bar')
   end
 
+  test "#field with assertion" do
+    dataset = Ethel::Dataset.new
+    field = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field)
+
+    assert_raises(Ethel::NonexistentField) do
+      dataset.field('baz', true)
+    end
+  end
+
   test "#validate_row raises exception for missing column" do
     dataset = Ethel::Dataset.new
     field_1 = stub('field', :name => 'foo', :type => :integer)

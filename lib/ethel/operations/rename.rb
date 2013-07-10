@@ -9,7 +9,7 @@ module Ethel
 
       def setup(dataset)
         super
-        field = dataset.field(@name)
+        field = dataset.field(@name, true)
         new_field = Field.new(@new_name, :type => field.type)
         dataset.alter_field(@name, new_field)
       end

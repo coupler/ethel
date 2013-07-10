@@ -33,8 +33,12 @@ module Ethel
       end
     end
 
-    def field(name)
-      @fields[name]
+    def field(name, assert = false)
+      field = @fields[name]
+      if assert && field.nil?
+        raise NonexistentField, "field '#{name}' doesn't exist"
+      end
+      field
     end
 
     def each_field(&block)

@@ -7,7 +7,7 @@ module TestOperations
     def setup
       @field = stub('field', :name => 'foo', :type => :integer)
       @dataset = stub('dataset')
-      @dataset.stubs(:field).with('foo').returns(@field)
+      @dataset.stubs(:field).with('foo', true).returns(@field)
     end
 
     test "subclass of Operation" do
@@ -17,6 +17,8 @@ module TestOperations
     test "update a field's values" do
       row = {'id' => 1, 'foo' => 123, 'bar' => "baz"}
       op = Operations::Update.new('foo', 456)
+
+      @dataset.expects(:field).with('foo', true).returns(@field)
       op.setup(@dataset)
       assert_equal(row.merge('foo' => 456), op.transform(row.dup))
     end
