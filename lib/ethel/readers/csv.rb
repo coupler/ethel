@@ -41,6 +41,8 @@ module Ethel
           csv.close
         end
       end
+
+      register('csv', self)
     end
   end
 end

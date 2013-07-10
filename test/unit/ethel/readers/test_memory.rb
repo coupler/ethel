@@ -47,5 +47,9 @@ module TestReaders
         end
       end
     end
+
+    test "registers itself" do
+      assert_equal Readers::Memory, Reader['memory']
+    end
   end
 end

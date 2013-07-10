@@ -71,5 +71,9 @@ module TestReaders
       expected = [{'foo' => '1', 'bar' => '2'}, {'foo' => 'a', 'bar' => 'b'}]
       assert_equal(expected, rows)
     end
+
+    test "registers itself" do
+      assert_equal Readers::CSV, Reader['csv']
+    end
   end
 end

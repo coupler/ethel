@@ -34,6 +34,8 @@ module Ethel
       def each_row(&block)
         @data.each(&block)
       end
+
+      register('memory', self)
     end
   end
 end
