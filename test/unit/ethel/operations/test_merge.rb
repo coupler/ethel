@@ -37,6 +37,20 @@ module TestOperations
         op.transform({'id' => 1, 'foo' => 'one'}))
     end
 
+    test "matching on different field names" do
+      reader = stub('reader')
+      op = Operations::Merge.new(reader, 'id', 'fooid')
+
+      merge_row_1 = {'fooid' => 1, 'bar' => 123}
+      merge_row_2 = {'fooid' => 2, 'bar' => 456}
+      reader.expects(:each_row).multiple_yields([merge_row_1], [merge_row_2]).twice
+
+      assert_equal({'id' => 2, 'bar' => 456, 'foo' => 'two'},
+        op.transform({'id' => 2, 'foo' => 'two'}))
+      assert_equal({'id' => 1, 'bar' => 123, 'foo' => 'one'},
+        op.transform({'id' => 1, 'foo' => 'one'}))
+    end
+
     test "registers itself" do
       assert_equal Operations::Merge, Operation.operation('merge')
     end
