@@ -133,4 +133,16 @@ class TestDataset < Test::Unit::TestCase
       dataset.validate_row({'foo' => 'string', 'bar' => 'blah'})
     end
   end
+
+  test "#validate_row treats nil as match" do
+    dataset = Ethel::Dataset.new
+    field_1 = stub('field', :name => 'foo', :type => :integer)
+    dataset.add_field(field_1)
+    field_2 = stub('field', :name => 'bar', :type => :string)
+    dataset.add_field(field_2)
+
+    assert_nothing_raised do
+      dataset.validate_row({'foo' => nil, 'bar' => nil})
+    end
+  end
 end

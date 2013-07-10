@@ -56,10 +56,13 @@ module Ethel
           missing << field.name
         else
           # check field type
-          type = Util.type_of(row[field.name])
-          if field.type != type
-            invalid ||= []
-            invalid << "'#{field.name}' (expected #{field.type}, got #{type})"
+          value = row[field.name]
+          if !value.nil?
+            type = Util.type_of(value)
+            if field.type != type
+              invalid ||= []
+              invalid << "'#{field.name}' (expected #{field.type}, got #{type})"
+            end
           end
         end
       end
