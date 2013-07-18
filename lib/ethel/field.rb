@@ -8,6 +8,12 @@ module Ethel
     attr_reader :name, :type
 
     def initialize(name, options)
+      if !name.kind_of?(String)
+        raise ArgumentError, "expected name to be a String, but was #{name.class}"
+      elsif name == ""
+        raise ArgumentError, "name must not be empty"
+      end
+
       @name = name
       raise InvalidFieldType if !VALID_TYPES.include?(options[:type])
       @type = options[:type]
