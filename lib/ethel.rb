@@ -15,4 +15,14 @@ module Ethel
   class InvalidFieldName < Exception; end
   class NonexistentField < Exception; end
   class InvalidRow < Exception; end
+
+  def self.migrate(read_options, write_options)
+    reader = Reader[read_options[:type]].
+      new(read_options.reject { |k, v| k == :type })
+    writer = Writer[write_options[:type]].
+      new(write_options.reject { |k, v| k == :type })
+    migration = Migration.new(reader, writer)
+    yield migration
+    migration.run
+  end
 end

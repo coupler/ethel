@@ -1,5 +1,5 @@
 guard 'test' do
-  watch(%r{^lib/ethel/([^/]+/)*([^/]+)\.rb$}) do |m|
+  watch(%r{^lib/([^/]+/)*([^/]+)\.rb$}) do |m|
     "test/unit/#{m[1]}test_#{m[2]}.rb"
   end
   watch(%r{^test/unit/([^/]+/)*test_.+\.rb$})
