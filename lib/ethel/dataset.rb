@@ -67,19 +67,17 @@ module Ethel
         end
       end
 
-      errors = nil
+      errors = []
       unless missing.nil?
-        errors = ["missing fields: #{missing.join(", ")}"]
+        errors << "missing fields: #{missing.inspect}"
       end
       unless keys.empty?
-        errors ||= []
-        errors << "extra fields: #{keys.join(", ")}"
+        errors << "extra fields: #{keys.inspect}"
       end
       unless invalid.nil?
-        errors ||= []
-        errors << "invalid values: #{invalid.join(", ")}"
+        errors << "invalid values: #{invalid.inspect}"
       end
-      unless errors.nil?
+      unless errors.empty?
         raise InvalidRow, errors.join("; ")
       end
     end
