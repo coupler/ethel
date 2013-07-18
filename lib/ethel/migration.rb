@@ -1,5 +1,7 @@
 module Ethel
   class Migration
+    attr_reader :reader, :writer
+
     def initialize(reader, writer)
       @reader = reader
       @writer = writer
