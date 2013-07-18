@@ -19,10 +19,11 @@ class TestEthel < Test::Unit::TestCase
     read_opts = {:type => 'foo', :one => 'one', :two => 'two'}
     write_opts = {:type => 'bar', :three => 'three', :four => 'four'}
     migration.expects(:run)
-    Ethel.migrate(read_opts, write_opts) do |m|
+    result = Ethel.migrate(read_opts, write_opts) do |m|
       yielded = true
       assert_equal migration, m
     end
     assert yielded
+    assert_equal migration, result
   end
 end

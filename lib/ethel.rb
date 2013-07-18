@@ -24,5 +24,6 @@ module Ethel
     migration = Migration.new(reader, writer)
     yield migration
     migration.run
+    migration
   end
 end
