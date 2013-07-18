@@ -45,7 +45,7 @@ module Ethel
           writer.flush
 
           if i < last
-            reader = Readers::Memory.new(writer.data)
+            reader = Readers::Memory.new(:data => writer.data)
           end
         end
       end

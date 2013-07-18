@@ -81,7 +81,7 @@ class TestMigration < Test::Unit::TestCase
 
     # round 2
     seq << memwriter.expects(:data).returns(write_data)
-    seq << Ethel::Readers::Memory.expects(:new).with(write_data).returns(memreader)
+    seq << Ethel::Readers::Memory.expects(:new).with(:data => write_data).returns(memreader)
     seq << cast_operation_2.expects(:setup).with(dataset)
     seq << @writer.expects(:prepare).with(dataset)
     seq << memreader.expects(:each_row).yields(row)
