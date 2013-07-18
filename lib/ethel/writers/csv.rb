@@ -1,12 +1,12 @@
 module Ethel
   module Writers
     class CSV < Writer
-      def initialize(options, csv_options = {})
+      def initialize(options)
         if !options.has_key?(:string) && !options.has_key?(:file)
           raise "either the :file or :string option must be specified"
         end
         @options = options
-        @csv_options = csv_options
+        @csv_options = options[:csv_options] ||= {}
         @field_names = []
       end
 

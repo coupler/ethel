@@ -1,7 +1,7 @@
 module Ethel
   module Writers
     class Memory < Writer
-      def initialize
+      def initialize(options = {})
         @field_names = []
         @data = []
       end
