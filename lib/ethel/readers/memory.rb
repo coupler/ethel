@@ -1,8 +1,8 @@
 module Ethel
   module Readers
     class Memory < Reader
-      def initialize(data)
-        @data = data
+      def initialize(options)
+        @data = options[:data]
       end
 
       def read(dataset)

@@ -72,7 +72,7 @@ module IntegrationHelper
   def get_reader(type, data)
     case type
     when 'memory'
-      Ethel::Readers::Memory.new(data)
+      Ethel::Readers::Memory.new(:data => data)
     when 'csv'
       Ethel::Readers::CSV.new(:string => data)
     else

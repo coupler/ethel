@@ -9,7 +9,7 @@ module TestReaders
     end
 
     test "#read array of hashes" do
-      reader = Readers::Memory.new([{'foo' => 123}, {'foo' => 456}])
+      reader = Readers::Memory.new(:data => [{'foo' => 123}, {'foo' => 456}])
 
       dataset = stub('dataset')
       field = stub('field')
@@ -19,7 +19,7 @@ module TestReaders
     end
 
     test "#read with inconsistent names" do
-      reader = Readers::Memory.new([{'foo' => 123}, {'bar' => 456}])
+      reader = Readers::Memory.new(:data => [{'foo' => 123}, {'bar' => 456}])
 
       dataset = stub('dataset')
       assert_raises(InvalidFieldName) do
@@ -28,7 +28,7 @@ module TestReaders
     end
 
     test "#read with inconsistent values" do
-      reader = Readers::Memory.new([{'foo' => 123}, {'foo' => 'bar'}])
+      reader = Readers::Memory.new(:data => [{'foo' => 123}, {'foo' => 'bar'}])
 
       dataset = stub('dataset')
       assert_raises(InvalidFieldType) do
@@ -37,7 +37,7 @@ module TestReaders
     end
 
     test "#each_row" do
-      reader = Readers::Memory.new([{'foo' => 123}, {'foo' => 456}])
+      reader = Readers::Memory.new(:data => [{'foo' => 123}, {'foo' => 456}])
       reader.to_enum(:each_row).with_index do |row, i|
         case i
         when 0
