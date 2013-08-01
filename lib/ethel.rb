@@ -2,6 +2,7 @@ require 'csv'
 require 'bigdecimal'
 
 require 'ethel/version'
+require 'ethel/error'
 require 'ethel/field'
 require 'ethel/dataset'
 require 'ethel/reader'
@@ -15,6 +16,7 @@ module Ethel
   class InvalidFieldName < Exception; end
   class NonexistentField < Exception; end
   class InvalidRow < Exception; end
+  class InvalidChoice < Exception; end
 
   def self.migrate(read_options, write_options)
     reader = Reader[read_options[:type]].
