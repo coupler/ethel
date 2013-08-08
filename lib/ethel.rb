@@ -10,6 +10,7 @@ require 'ethel/reader'
 require 'ethel/writer'
 require 'ethel/operation'
 require 'ethel/migration'
+require 'ethel/preprocessor'
 require 'ethel/util'
 require 'ethel/adapters'
 
