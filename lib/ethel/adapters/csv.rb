@@ -5,5 +5,6 @@ module Ethel
   end
 end
 
+require 'ethel/adapters/csv/preprocessor'
 require 'ethel/adapters/csv/reader'
 require 'ethel/adapters/csv/writer'
