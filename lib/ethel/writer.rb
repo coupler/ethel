@@ -1,13 +1,6 @@
 module Ethel
   class Writer
-    @@writers = {}
-    def self.register(name, klass)
-      @@writers[name] = klass
-    end
-
-    def self.[](name)
-      @@writers[name]
-    end
+    include Register
 
     def prepare(dataset)
     end

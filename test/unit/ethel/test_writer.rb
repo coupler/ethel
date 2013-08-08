@@ -2,11 +2,11 @@ require 'helper'
 
 class TestWriter < Test::Unit::TestCase
   def setup
-    @original_writers = Ethel::Writer.class_variable_get(:@@writers)
+    @original_writers = Ethel::Writer.instance_variable_get(:@subclasses)
   end
 
   def teardown
-    Ethel::Writer.class_variable_set(:@@writers, @original_writers)
+    Ethel::Writer.instance_variable_set(:@subclasses, @original_writers)
   end
 
   def new_subclass(&block)

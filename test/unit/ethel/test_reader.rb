@@ -2,11 +2,11 @@ require 'helper'
 
 class TestReader < Test::Unit::TestCase
   def setup
-    @original_readers = Ethel::Reader.class_variable_get(:@@readers)
+    @original_readers = Ethel::Reader.instance_variable_get(:@subclasses)
   end
 
   def teardown
-    Ethel::Reader.class_variable_set(:@@readers, @original_readers)
+    Ethel::Reader.instance_variable_set(:@subclasses, @original_readers)
   end
 
   def new_subclass(&block)

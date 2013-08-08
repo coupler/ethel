@@ -42,7 +42,7 @@ module Ethel
         end
       end
 
-      register('csv', self)
+      Reader.register('csv', self)
     end
   end
 end

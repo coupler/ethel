@@ -3,6 +3,7 @@ require 'bigdecimal'
 
 require 'ethel/version'
 require 'ethel/error'
+require 'ethel/register'
 require 'ethel/field'
 require 'ethel/dataset'
 require 'ethel/reader'

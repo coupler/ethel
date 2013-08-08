@@ -20,7 +20,7 @@ module Ethel
         @data
       end
 
-      register('memory', self)
+      Writer.register('memory', self)
     end
   end
 end

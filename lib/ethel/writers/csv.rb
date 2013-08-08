@@ -43,7 +43,7 @@ module Ethel
         end
       end
 
-      register('csv', self)
+      Writer.register('csv', self)
     end
   end
 end

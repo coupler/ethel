@@ -35,7 +35,7 @@ module Ethel
         @data.each(&block)
       end
 
-      register('memory', self)
+      Reader.register('memory', self)
     end
   end
 end
