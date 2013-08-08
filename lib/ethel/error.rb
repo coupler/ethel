@@ -12,10 +12,6 @@ module Ethel
       @recoverable
     end
 
-    def choices
-      return []
-    end
-
     def each_choice
       choices.each do |choice|
         if choice.is_a?(Hash)
@@ -56,6 +52,12 @@ module Ethel
         hsh
       end
       @choice = args.empty? ? val : [val, args]
+    end
+
+    protected
+
+    def choices
+      []
     end
   end
 end
