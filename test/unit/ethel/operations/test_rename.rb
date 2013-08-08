@@ -3,6 +3,7 @@ require 'helper'
 module TestOperations
   class TestRename < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     def setup
       @field = stub('original field', :name => 'foo', :type => :string)

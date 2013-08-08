@@ -3,6 +3,7 @@ require 'helper'
 module TestOperations
   class TestAddField < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     test "subclass of Operation" do
       assert_equal Operation, Operations::AddField.superclass

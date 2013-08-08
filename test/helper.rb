@@ -33,12 +33,24 @@ end
 
 module ConstantsHelper
   module ClassMethods
-    def const_missing(name)
-      if Ethel.const_defined?(name)
-        Ethel.const_get(name)
-      else
-        super
+    def scope(mod)
+      @scope = []
+      mod.name.split("::").inject(Object) do |mod, name|
+        child = mod.const_get(name)
+        @scope << child
+        child
       end
+    end
+
+    def const_missing(name)
+      if @scope
+        @scope.reverse_each do |mod|
+          if mod.const_defined?(name)
+            return mod.const_get(name)
+          end
+        end
+      end
+      super
     end
   end
 

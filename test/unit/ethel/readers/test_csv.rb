@@ -3,6 +3,7 @@ require 'helper'
 module TestReaders
   class TestCSV < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     test "subclass of Reader" do
       assert_equal Reader, Readers::CSV.superclass

@@ -3,6 +3,7 @@ require 'helper'
 module TestWriters
   class TestMemory < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     test "subclass of Writer" do
       assert_equal Writer, Writers::Memory.superclass

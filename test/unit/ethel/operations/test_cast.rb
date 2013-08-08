@@ -3,6 +3,7 @@ require 'helper'
 module TestOperations
   class TestCast < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     def setup
       @new_field = stub('new field', :name => 'foo')

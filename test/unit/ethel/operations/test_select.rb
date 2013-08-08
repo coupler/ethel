@@ -3,6 +3,7 @@ require 'helper'
 module TestOperations
   class TestSelect < Test::Unit::TestCase
     include ConstantsHelper
+    scope Ethel
 
     test "subclass of Operation" do
       assert_equal Operation, Operations::Select.superclass
