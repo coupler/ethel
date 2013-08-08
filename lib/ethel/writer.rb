@@ -19,4 +19,3 @@ module Ethel
 end
 
 require 'ethel/writers/csv'
-require 'ethel/writers/memory'

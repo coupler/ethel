@@ -1,0 +1,1 @@
+require 'ethel/adapters/memory'

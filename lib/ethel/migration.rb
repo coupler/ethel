@@ -33,7 +33,7 @@ module Ethel
             if i == last
               @writer
             else
-              Writers::Memory.new
+              Writer['memory'].new
             end
           writer.prepare(@dataset)
 
@@ -45,7 +45,7 @@ module Ethel
           writer.flush
 
           if i < last
-            reader = Readers::Memory.new(:data => writer.data)
+            reader = Reader['memory'].new(:data => writer.data)
           end
         end
       end

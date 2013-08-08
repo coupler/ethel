@@ -13,5 +13,4 @@ module Ethel
   end
 end
 
-require 'ethel/readers/memory'
 require 'ethel/readers/csv'

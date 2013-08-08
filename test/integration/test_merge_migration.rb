@@ -19,7 +19,7 @@ class TestMergeMigration < Test::Unit::TestCase
   end
 
   io_test "merging fields from memory source" do
-    source = Ethel::Readers::Memory.new(:data => [
+    source = Ethel::Adapters::Memory::Reader.new(:data => [
       {'id' => '1', 'baz' => 'one', 'qux' => 'uno'},
       {'id' => '2', 'baz' => 'two', 'qux' => 'dos'}
     ])
