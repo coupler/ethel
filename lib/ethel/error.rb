@@ -12,12 +12,25 @@ module Ethel
       @recoverable
     end
 
-    def choices=(choices)
-      @choices = choices
+    def choices
+      return []
+    end
+
+    def each_choice
+      choices.each do |choice|
+        if choice.is_a?(Hash)
+          name = choice.keys[0]
+          args = choice[name]
+        else
+          name = choice
+          args = {}
+        end
+        yield name, args
+      end
     end
 
     def choose(val, args = {})
-      choice = @choices.find do |c|
+      choice = choices.find do |c|
         val == (c.is_a?(Hash) ? c.keys[0] : c)
       end
 
