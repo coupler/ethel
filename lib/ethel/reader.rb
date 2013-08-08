@@ -2,7 +2,6 @@ module Ethel
   class Reader
     include Register
 
-
     def each_row
       raise NotImplementedError
     end
@@ -12,5 +11,3 @@ module Ethel
     end
   end
 end
-
-require 'ethel/readers/csv'

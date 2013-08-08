@@ -17,5 +17,3 @@ module Ethel
     end
   end
 end
-
-require 'ethel/writers/csv'

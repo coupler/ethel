@@ -11,7 +11,7 @@ require 'ethel/writer'
 require 'ethel/operation'
 require 'ethel/migration'
 require 'ethel/util'
-require 'ethel/adapter'
+require 'ethel/adapters'
 
 module Ethel
   class InvalidFieldType < Exception; end

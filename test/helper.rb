@@ -86,7 +86,7 @@ module IntegrationHelper
     when 'memory'
       Ethel::Adapters::Memory::Reader.new(:data => data)
     when 'csv'
-      Ethel::Readers::CSV.new(:string => data)
+      Ethel::Adapters::CSV::Reader.new(:string => data)
     else
       raise "invalid reader type: #{type.inspect}"
     end
@@ -97,7 +97,7 @@ module IntegrationHelper
     when 'memory'
       Ethel::Adapters::Memory::Writer.new
     when 'csv'
-      Ethel::Writers::CSV.new(:string => true)
+      Ethel::Adapters::CSV::Writer.new(:string => true)
     else
       raise "invalid writer type: #{type.inspect}"
     end
