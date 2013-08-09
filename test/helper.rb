@@ -11,6 +11,7 @@ end
 require 'test/unit'
 require 'mocha/setup'
 require 'tempfile'
+require 'byebug'
 
 require 'simplecov'
 SimpleCov.start
