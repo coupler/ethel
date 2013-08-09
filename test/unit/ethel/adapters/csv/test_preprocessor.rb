@@ -10,14 +10,14 @@ module TestAdapters
         assert_equal ::Ethel::Preprocessor, Preprocessor.superclass
       end
 
-      test "#check for properly formatted CSV" do
+      test "check for properly formatted CSV" do
         prep = Preprocessor.new(:string => "foo,bar\n1,2")
-        assert prep.check
+        assert prep.valid?
       end
 
-      test "#check when headers row has empty column" do
+      test "check when headers row has empty column" do
         prep = Preprocessor.new(:string => "foo,\n1,2")
-        assert !prep.check
+        assert !prep.valid?
 
         ok = false
         prep.each_error do |error|

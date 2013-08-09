@@ -11,12 +11,19 @@ module Ethel
       @errors = []
     end
 
-    def check
-      true
+    def valid?
+      @errors.clear
+      validate
+      @errors.empty?
     end
 
     def each_error(&block)
       @errors.each(&block)
+    end
+
+    protected
+
+    def validate
     end
   end
 end

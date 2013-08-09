@@ -16,9 +16,9 @@ module Ethel
       end
 
       class Preprocessor < ::Ethel::Preprocessor
-        def check
-          @errors.clear
+        protected
 
+        def validate
           # Check headers
           @field_names ||= get_field_names
           @field_names.each_with_index do |field_name, i|
@@ -27,8 +27,6 @@ module Ethel
               @errors << error
             end
           end
-
-          @errors.empty?
         end
 
         private

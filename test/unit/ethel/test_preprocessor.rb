@@ -28,9 +28,14 @@ class TestPreprocessor < Test::Unit::TestCase
     assert_same options, prep.options
   end
 
-  test "#check" do
-    prep = Preprocessor.new('foo' => 123)
-    assert prep.check
+  test "#valid? is false when validate adds errors" do
+    klass = new_subclass do
+      def validate
+        @errors << 'foo'
+      end
+    end
+    prep = klass.new('foo' => 123)
+    assert !prep.valid?
   end
 
   test "#each_error" do
