@@ -81,6 +81,10 @@ module TestAdapters
         output = prep.run(:string => true)
         assert_equal "foo\n1\n", output
       end
+
+      test "registers itself" do
+        assert_equal Preprocessor, Ethel::Preprocessor['csv']
+      end
     end
   end
 end

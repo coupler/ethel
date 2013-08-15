@@ -59,6 +59,8 @@ module Ethel
             end
           end
         end
+
+        Ethel::Preprocessor.register('csv', self)
       end
     end
   end
