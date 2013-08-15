@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestRenameMigration < Test::Unit::TestCase
+class TestRemoveFieldMigration < Test::Unit::TestCase
   include IntegrationHelper
 
   io_test("removing a field") do
