@@ -41,6 +41,46 @@ module TestAdapters
         end
         assert ok
       end
+
+      test "process to string with renamed column" do
+        prep = Preprocessor.new(:string => "foo,\n1,2")
+        assert !prep.valid?
+        prep.each_error do |error|
+          error.choose(:rename, :name => 'bar')
+        end
+
+        output = prep.run(:string => true)
+        assert_equal "foo,bar\n1,2\n", output
+      end
+
+      test "process to file with renamed column" do
+        in_file = Tempfile.new('ethel-in')
+        in_file.puts("foo,")
+        in_file.puts("1,2")
+        in_file.close
+
+        prep = Preprocessor.new(:file => in_file.path)
+        assert !prep.valid?
+        prep.each_error do |error|
+          error.choose(:rename, :name => 'bar')
+        end
+
+        out_file = Tempfile.new('ethel-out')
+        out_file.close
+        prep.run(:file => out_file.path)
+        assert_equal "foo,bar\n1,2\n", File.read(out_file.path)
+      end
+
+      test "process to string with dropped column" do
+        prep = Preprocessor.new(:string => "foo,\n1,2")
+        assert !prep.valid?
+        prep.each_error do |error|
+          error.choose(:drop)
+        end
+
+        output = prep.run(:string => true)
+        assert_equal "foo\n1\n", output
+      end
     end
   end
 end

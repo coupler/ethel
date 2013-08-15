@@ -16,11 +16,13 @@ module Ethel
       end
 
       class Preprocessor < ::Ethel::Preprocessor
+        include Common
+
         protected
 
         def validate
           # Check headers
-          @field_names ||= get_field_names
+          @field_names ||= get_field_names(@options)
           @field_names.each_with_index do |field_name, i|
             if field_name.nil?
               error = MissingFieldNameError.new(i)
@@ -29,23 +31,33 @@ module Ethel
           end
         end
 
-        private
+        def process(process_options)
+          cols = (0...@field_names.length).to_a
+          each_error do |error|
+            case error
+            when MissingFieldNameError
+              name, args = error.choice
+              colnum = error.info[:colnum]
 
-        def get_field_names
-          result = nil
-          opts = csv_options.merge(:headers => false)
-          if @options[:string]
-            result = ::CSV.parse_line(@options[:string], opts)
-          elsif @options[:file]
-            ::CSV.open(@options[:file], opts) do |csv|
-              result = csv.shift
+              case name
+              when :rename
+                @field_names[colnum] = args[:name]
+              when :drop
+                cols.delete_at(colnum)
+              end
             end
           end
-          result
-        end
 
-        def csv_options
-          @options[:csv_options] || {}
+          write_csv(process_options) do |out_csv|
+            out_csv << @field_names.values_at(*cols)
+
+            read_csv(@options) do |in_csv|
+              in_csv.shift
+              in_csv.each do |row|
+                out_csv << row.values_at(*cols)
+              end
+            end
+          end
         end
       end
     end
