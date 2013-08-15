@@ -11,7 +11,7 @@ module Ethel
               csv
             end
           elsif options[:file]
-            ::CSV.open(options[:file], csv_options, &block)
+            ::CSV.open(options[:file], 'rb', csv_options, &block)
           end
         end
 
