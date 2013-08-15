@@ -45,17 +45,50 @@ class TestPreprocessor < Test::Unit::TestCase
         super
       end
     end
-    klass.send(:define_method, :check) do
+    klass.send(:define_method, :validate) do
       @errors << error
-      false
     end
     prep = klass.new('foo' => 123)
-    prep.check
+    assert !prep.valid?
 
     ok = false
     prep.each_error do |e|
       ok = error == e
     end
     assert ok
+  end
+
+  test "#run with no errors does nothing" do
+    klass = new_subclass
+    prep = klass.new('foo' => 123)
+    prep.expects(:process).never
+    prep.run
+  end
+
+  test "#run with unresolved errors raises exception" do
+    klass = new_subclass
+    error = stub('error', :choice => nil)
+    klass.send(:define_method, :validate) do
+      @errors << error
+    end
+
+    prep = klass.new('foo' => 123)
+    assert !prep.valid?
+    assert_raises do
+      prep.run
+    end
+  end
+
+  test "#run with resolved errors" do
+    klass = new_subclass
+    error = stub('error', :choice => :foo)
+    klass.send(:define_method, :validate) do
+      @errors << error
+    end
+
+    prep = klass.new('foo' => 123)
+    assert !prep.valid?
+    prep.expects(:process).with(:some_option => true).returns('some output')
+    assert_equal 'some output', prep.run(:some_option => true)
   end
 end

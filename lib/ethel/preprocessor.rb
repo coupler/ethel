@@ -21,9 +21,23 @@ module Ethel
       @errors.each(&block)
     end
 
+    def run(options = nil)
+      if !@errors.empty?
+        # make sure errors are resolved
+        if @errors.any? { |error| error.choice.nil? }
+          raise "Cannot run preprocessor with unresolved errors"
+        end
+
+        process(options)
+      end
+    end
+
     protected
 
     def validate
+    end
+
+    def process(options = nil)
     end
   end
 end
