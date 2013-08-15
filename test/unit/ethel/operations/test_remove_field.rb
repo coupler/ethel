@@ -17,6 +17,13 @@ module TestOperations
       op.setup(dataset)
     end
 
+    test "#transform removes field" do
+      op = Operations::RemoveField.new('foo')
+      row = {'foo' => 123, 'bar' => 456}
+      op.transform(row)
+      assert_equal({'bar' => 456}, row)
+    end
+
     test "registers itself" do
       assert_equal Operations::RemoveField, Operation['remove_field']
     end
