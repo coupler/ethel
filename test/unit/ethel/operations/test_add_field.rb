@@ -19,6 +19,13 @@ module TestOperations
       op.setup(dataset)
     end
 
+    test "#transform adds field" do
+      op = Operations::AddField.new('foo', :integer)
+      row = {'bar' => 123}
+      op.transform(row)
+      assert_equal({'bar' => 123, 'foo' => nil}, row)
+    end
+
     test "registers itself" do
       assert_equal Operations::AddField, Operation['add_field']
     end

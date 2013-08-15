@@ -12,6 +12,12 @@ module Ethel
         dataset.add_field(Field.new(@name, :type => @type))
       end
 
+      def transform(row)
+        row = super(row)
+        row[@name] = nil
+        row
+      end
+
       register('add_field', self)
     end
   end
