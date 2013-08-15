@@ -51,7 +51,7 @@ class TestError < Test::Unit::TestCase
     end
     err = klass.new("foo", true)
     err.choose(:foo)
-    assert_equal :foo, err.choice
+    assert_equal [:foo, {}], err.choice
   end
 
   test "#choose with string parameter" do

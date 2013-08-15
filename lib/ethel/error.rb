@@ -51,7 +51,7 @@ module Ethel
         hsh[name] = args[name]
         hsh
       end
-      @choice = args.empty? ? val : [val, args]
+      @choice = [val, args]
     end
 
     protected
