@@ -1,6 +1,6 @@
 module Ethel
   class Migration
-    attr_reader :reader, :writer
+    attr_reader :reader, :writer, :dataset
 
     def initialize(reader, writer)
       @reader = reader
