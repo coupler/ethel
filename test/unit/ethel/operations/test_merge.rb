@@ -24,6 +24,29 @@ module TestOperations
       op.setup(dataset_1)
     end
 
+    test "adds fields during setup callback for multiple fields" do
+      reader = stub('reader')
+      op = Operations::Merge.new(reader, ['id1', 'id2'])
+
+      dataset_1 = stub('dataset 1')
+      dataset_2 = stub('dataset 2')
+      Dataset.expects(:new).returns(dataset_2)
+      reader.expects(:read).with(dataset_2)
+      field_1 = stub('field 1', :name => 'id1', :type => :integer)
+      field_2 = stub('field 2', :name => 'id2', :type => :integer)
+      field_3 = stub('field 3', :name => 'foo', :type => :string)
+      dataset_2.expects(:each_field).multiple_yields([field_1], [field_2], [field_3])
+      dataset_1.expects(:add_field).with(field_3)
+      op.setup(dataset_1)
+    end
+
+    test "raise error if matching field arrays are different lengths" do
+      reader = stub('reader')
+      assert_raises do
+        Operations::Merge.new(reader, ['id1', 'id2'], 'foo')
+      end
+    end
+
     test "adds data during transform" do
       reader = stub('reader')
       op = Operations::Merge.new(reader, 'id')

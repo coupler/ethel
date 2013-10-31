@@ -1,11 +1,14 @@
 module Ethel
   module Operations
     class Merge < Operation
-      def initialize(reader, left_name, right_name = left_name)
+      def initialize(reader, left_fields, right_fields = left_fields)
         super
         @reader = reader
-        @left_name = left_name
-        @right_name = right_name
+        @left_fields = left_fields.is_a?(Array) ? left_fields : [left_fields]
+        @right_fields = right_fields.is_a?(Array) ? right_fields : [right_fields]
+        if @left_fields.length != @right_fields.length
+          raise ArgumentError, "left and right fields must be the same length"
+        end
       end
 
       def setup(dataset)
@@ -14,7 +17,7 @@ module Ethel
         other = Dataset.new
         @reader.read(other)
         other.each_field do |field|
-          if field.name != @right_name
+          if !@right_fields.include?(field.name)
             dataset.add_field(field)
           end
         end
@@ -23,10 +26,11 @@ module Ethel
       def transform(row)
         row = super
 
-        target = row[@left_name]
+        target_keys = row.values_at(*@left_fields)
         @reader.each_row do |merge_row|
-          if merge_row[@right_name] == target
-            row = row.merge(merge_row.reject { |k, v| k == @right_name })
+          keys = merge_row.values_at(*@right_fields)
+          if keys == target_keys
+            row = row.merge(merge_row.reject { |k, v| @right_fields.include?(k) })
             break
           end
         end
