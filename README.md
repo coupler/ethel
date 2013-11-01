@@ -30,6 +30,7 @@ regular Ruby objects. Additional adapters can be implemented as separate
 libraries.
 
 There are a few operations available:
+
 * add/remove/rename/select fields
 * cast
 * merge
