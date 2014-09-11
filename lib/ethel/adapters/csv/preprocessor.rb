@@ -15,18 +15,57 @@ module Ethel
         end
       end
 
+      class UnclosedQuoteError < Error
+        def initialize(line)
+          super('unclosed quote', true, {:line => line})
+        end
+
+        protected
+
+        def choices
+        end
+      end
+
+      class StrayQuoteError < Error
+        def initialize(line)
+          super('stray quote', true, {:line => line})
+        end
+
+        protected
+
+        def choices
+        end
+      end
+
       class Preprocessor < ::Ethel::Preprocessor
         include Common
 
         protected
 
         def validate
-          # Check headers
-          @field_names ||= get_field_names(@options)
-          @field_names.each_with_index do |field_name, i|
-            if field_name.nil?
-              error = MissingFieldNameError.new(i)
-              @errors << error
+          # Check for malformities
+          read_csv(@options) do |csv|
+            begin
+              # FIXME: don't slurp the file into memory
+              @data = csv.read
+
+              # Check headers
+              @field_names = @data[0]
+              @field_names.each_with_index do |field_name, i|
+                if field_name.nil?
+                  error = MissingFieldNameError.new(i)
+                  @errors << error
+                end
+              end
+            rescue ::CSV::MalformedCSVError => e
+              case e.message
+              when /^Unclosed quoted field on line (\d+)\.$/
+                error = UnclosedQuoteError.new($1.to_i)
+                @errors << error
+              when /^Missing or stray quote in line (\d+)$/
+                error = StrayQuoteError.new($1.to_i)
+                @errors << error
+              end
             end
           end
         end

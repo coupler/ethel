@@ -10,12 +10,22 @@ module TestAdapters
         assert_equal ::Ethel::Preprocessor, Preprocessor.superclass
       end
 
-      test "check for properly formatted CSV" do
+      test "validation for properly formatted CSV" do
         prep = Preprocessor.new(:string => "foo,bar\n1,2")
         assert prep.valid?
       end
 
-      test "check when headers row has empty column" do
+      test "validation for unclosed quote" do
+        prep = Preprocessor.new(:string => %{foo,"bar\n1,2})
+        assert !prep.valid?
+      end
+
+      test "validation for stray quote" do
+        prep = Preprocessor.new(:string => "1,\"23\"4\"5\", 6")
+        assert !prep.valid?
+      end
+
+      test "validation when headers row has empty column" do
         prep = Preprocessor.new(:string => "foo,\n1,2")
         assert !prep.valid?
 
