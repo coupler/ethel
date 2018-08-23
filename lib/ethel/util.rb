@@ -2,7 +2,7 @@ module Ethel
   module Util
     def self.type_of(value)
       case value
-      when Fixnum
+      when Integer
         :integer
       when String
         # TODO: check for blob (look for non-ascii?)
