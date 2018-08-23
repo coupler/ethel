@@ -71,7 +71,7 @@ module IntegrationHelper
       combinations.each do |(read_type, write_type)|
         desc2 = "#{desc} (#{read_type} to #{write_type})"
         test(desc2, &block)
-        method_name = added_methods.last
+        method_name = added_method_names.last
         attribute(:read_type, read_type, {}, method_name)
         attribute(:write_type, write_type, {}, method_name)
       end
