@@ -36,6 +36,12 @@ module TestOperations
       assert_equal({'foo' => '123'}, op.transform(row))
     end
 
+    test "uses to_f when casting to integer" do
+      op = Operations::Cast.new('foo', :float)
+      row = {'foo' => '1.0'}
+      assert_equal({'foo' => 1.0}, op.transform(row))
+    end
+
     test "registers itself" do
       assert_equal Operations::Cast, Operation['cast']
     end

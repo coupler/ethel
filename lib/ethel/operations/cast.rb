@@ -20,6 +20,8 @@ module Ethel
           case @new_type
           when :integer
             row[@name].to_i
+          when :float
+            row[@name].to_f
           when :string
             row[@name].to_s
           end
