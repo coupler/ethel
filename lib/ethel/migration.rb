@@ -61,8 +61,6 @@ module Ethel
       end
     end
 
-    protected
-
     def add_operation(op)
       # FIXME: We need an immediate check to see if the operation
       # is valid for the current state of the dataset. Also, is
