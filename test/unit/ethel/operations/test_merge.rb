@@ -11,7 +11,7 @@ module TestOperations
 
     test "adds fields during setup callback" do
       reader = stub('reader')
-      op = Operations::Merge.new(reader, 'id')
+      op = Operations::Merge.new(reader, :fields => 'id')
 
       dataset_1 = stub('dataset 1')
       dataset_2 = stub('dataset 2')
@@ -26,7 +26,7 @@ module TestOperations
 
     test "adds fields during setup callback for multiple fields" do
       reader = stub('reader')
-      op = Operations::Merge.new(reader, ['id1', 'id2'])
+      op = Operations::Merge.new(reader, :fields => ['id1', 'id2'])
 
       dataset_1 = stub('dataset 1')
       dataset_2 = stub('dataset 2')
@@ -43,13 +43,13 @@ module TestOperations
     test "raise error if matching field arrays are different lengths" do
       reader = stub('reader')
       assert_raises do
-        Operations::Merge.new(reader, ['id1', 'id2'], 'foo')
+        Operations::Merge.new(reader, :origin_fields => ['id1', 'id2'], :target_fields => 'foo')
       end
     end
 
     test "adds data during transform" do
       reader = stub('reader')
-      op = Operations::Merge.new(reader, 'id')
+      op = Operations::Merge.new(reader, :fields => 'id')
 
       merge_row_1 = {'id' => 1, 'bar' => 123}
       merge_row_2 = {'id' => 2, 'bar' => 456}
@@ -63,7 +63,7 @@ module TestOperations
 
     test "matching on different field names" do
       reader = stub('reader')
-      op = Operations::Merge.new(reader, 'id', 'fooid')
+      op = Operations::Merge.new(reader, :origin_fields => 'id', :target_fields => 'fooid')
 
       merge_row_1 = {'fooid' => 1, 'bar' => 123}
       merge_row_2 = {'fooid' => 2, 'bar' => 456}

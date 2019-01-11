@@ -14,7 +14,7 @@ class TestMergeMigration < Test::Unit::TestCase
       {'id' => '2', 'foo' => 'junk', 'bar' => '456', 'baz' => 'two', 'qux' => 'dos'}
     ]
     migrate(data, expected) do |m|
-      m.merge(source, 'id')
+      m.merge(source, :fields => 'id')
     end
   end
 
@@ -32,7 +32,7 @@ class TestMergeMigration < Test::Unit::TestCase
       {'id' => '2', 'foo' => 'junk', 'bar' => '456', 'baz' => 'two', 'qux' => 'dos'}
     ]
     migrate(data, expected) do |m|
-      m.merge(source, 'id')
+      m.merge(source, :fields => 'id')
     end
   end
 end
