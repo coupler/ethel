@@ -1,9 +1,9 @@
 module Ethel
   module Operations
     class Merge < Operation
-      def initialize(reader, options = {})
+      def initialize(target_reader, options = {})
         super
-        @reader = reader
+        @target_reader = target_reader
 
         origin_fields = target_fields = nil
         if options.has_key?(:fields)
@@ -28,7 +28,7 @@ module Ethel
         super
 
         other = Dataset.new
-        @reader.read(other)
+        @target_reader.read(other)
         other.each_field do |field|
           if !@target_fields.include?(field.name)
             dataset.add_field(field)
@@ -40,7 +40,7 @@ module Ethel
         row = super
 
         origin_keys = row.values_at(*@origin_fields)
-        @reader.each_row do |merge_row|
+        @target_reader.each_row do |merge_row|
           target_keys = merge_row.values_at(*@target_fields)
           if origin_keys == target_keys
             row = row.merge(merge_row.reject { |k, v| @target_fields.include?(k) })
