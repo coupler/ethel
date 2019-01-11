@@ -10,4 +10,5 @@ group :development do
   gem 'rb-inotify', '~> 0.9'
   gem 'simplecov'
   gem 'byebug'
+  gem 'guard'
 end
