@@ -10,25 +10,38 @@ module Ethel
     end
 
     def initialize(*args)
-      @child_operations = []
-    end
-
-    def setup(dataset)
-      @child_operations.each do |child_operation|
-        child_operation.setup(dataset)
-      end
-    end
-
-    def transform(row)
-      @child_operations.inject(row) do |row, child_operation|
-        child_operation.transform(row)
-      end
+      @pre_operations = []
+      @post_operations = []
     end
 
     protected
 
-    def add_child_operation(operation)
-      @child_operations << operation
+    def perform_setup(dataset)
+      dataset = @pre_operations.inject(dataset) do |dataset, pre_operation|
+        pre_operation.setup(dataset)
+      end
+      dataset = yield(dataset)
+      @post_operations.inject(dataset) do |dataset, post_operation|
+        post_operation.setup(dataset)
+      end
+    end
+
+    def perform_transform(row)
+      row = @pre_operations.inject(row) do |row, pre_operation|
+        pre_operation.transform(row)
+      end
+      row = yield(row)
+      @post_operations.inject(row) do |row, post_operation|
+        post_operation.transform(row)
+      end
+    end
+
+    def add_pre_operation(operation)
+      @pre_operations << operation
+    end
+
+    def add_post_operation(operation)
+      @post_operations << operation
     end
   end
 end

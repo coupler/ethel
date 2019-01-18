@@ -7,22 +7,24 @@ module Ethel
       end
 
       def setup(dataset)
-        super
-
-        remove = []
-        dataset.each_field do |field|
-          if @names.index(field.name).nil?
-            remove << field.name
+        perform_setup(dataset) do |dataset|
+          remove = []
+          dataset.each_field do |field|
+            if !@names.include?(field.name)
+              remove << field.name
+            end
           end
-        end
-        remove.each do |name|
-          dataset.remove_field(name)
+          remove.each do |name|
+            dataset.remove_field(name)
+          end
+          dataset
         end
       end
 
       def transform(row)
-        row = super(row)
-        row.keep_if { |k, v| @names.include?(k) }
+        perform_transform(row) do |row|
+          row.keep_if { |k, v| @names.include?(k) }
+        end
       end
 
       register('select', self)

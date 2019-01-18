@@ -7,14 +7,17 @@ module Ethel
       end
 
       def setup(dataset)
-        super
-        dataset.remove_field(@name)
+        perform_setup(dataset) do |dataset|
+          dataset.remove_field(@name)
+          dataset
+        end
       end
 
       def transform(row)
-        row = super(row)
-        row.delete(@name)
-        row
+        perform_transform(row) do |row|
+          row.delete(@name)
+          row
+        end
       end
 
       register('remove_field', self)

@@ -8,16 +8,19 @@ module Ethel
       end
 
       def setup(dataset)
-        super
-        field = dataset.field(@name, true)
-        new_field = Field.new(@new_name, :type => field.type)
-        dataset.alter_field(@name, new_field)
+        perform_setup(dataset) do |dataset|
+          field = dataset.field(@name, true)
+          new_field = Field.new(@new_name, :type => field.type)
+          dataset.alter_field(@name, new_field)
+          dataset
+        end
       end
 
       def transform(row)
-        row = super(row)
-        row[@new_name] = row.delete(@name)
-        row
+        perform_transform(row) do |row|
+          row[@new_name] = row.delete(@name)
+          row
+        end
       end
 
       register('rename', self)
