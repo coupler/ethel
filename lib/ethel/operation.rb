@@ -16,22 +16,26 @@ module Ethel
 
     protected
 
-    def perform_setup(dataset)
-      dataset = @pre_operations.inject(dataset) do |dataset, pre_operation|
+    def perform_setup(dataset, pre_operations = @pre_operations, post_operations = @post_operations)
+      dataset = pre_operations.inject(dataset) do |dataset, pre_operation|
         pre_operation.setup(dataset)
       end
-      dataset = yield(dataset)
-      @post_operations.inject(dataset) do |dataset, post_operation|
+      if block_given?
+        dataset = yield(dataset)
+      end
+      post_operations.inject(dataset) do |dataset, post_operation|
         post_operation.setup(dataset)
       end
     end
 
-    def perform_transform(row)
-      row = @pre_operations.inject(row) do |row, pre_operation|
+    def perform_transform(row, pre_operations = @pre_operations, post_operations = @post_operations)
+      row = pre_operations.inject(row) do |row, pre_operation|
         pre_operation.transform(row)
       end
-      row = yield(row)
-      @post_operations.inject(row) do |row, post_operation|
+      if block_given?
+        row = yield(row)
+      end
+      post_operations.inject(row) do |row, post_operation|
         post_operation.transform(row)
       end
     end

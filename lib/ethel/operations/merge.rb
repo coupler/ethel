@@ -4,6 +4,7 @@ module Ethel
       def initialize(target_reader, options = {})
         super
         @target_reader = target_reader
+        is_join = options.has_key?(:join_reader)
 
         origin_fields = target_fields = []
         if options.has_key?(:fields)
@@ -27,24 +28,46 @@ module Ethel
           raise ArgumentError, "origin and target fields must be the same length"
         end
 
-        @origin_fields = origin_fields.collect do |field|
-          field = process_field(field)
-          if field[:name] != field[:alias]
-            rename = Operation["rename"].new(field[:name], field[:alias])
-            add_pre_operation(rename)
-          end
-          field
-        end
-        @target_fields = target_fields.collect do |field|
-          field = process_field(field)
-          if field[:name] != field[:alias]
-            rename = Operation["rename"].new(field[:name], field[:alias])
-            add_post_operation(rename)
-          end
+        @origin_fields = origin_fields.collect.with_index do |field, i|
+          field = process_field(field, "__origin_field_#{i}")
+
+          # rename join field to something obscure to prevent conflicts
+          op = Operation["rename"].new(field[:name], field[:tmp])
+          add_pre_operation(op)
+
+          op =
+            if field[:name] != field[:alias]
+              Operation["rename"].new(field[:tmp], field[:alias])
+            else
+              Operation["rename"].new(field[:tmp], field[:name])
+            end
+          add_post_operation(op)
+
           field
         end
 
-        if options.has_key?(:join_reader)
+        @target_pre_operations = []
+        @target_fields = target_fields.collect.with_index do |field, i|
+          field = process_field(field, "__target_field_#{i}")
+
+          # rename join field to something obscure to prevent conflicts
+          op = Operation["rename"].new(field[:name], field[:tmp])
+          @target_pre_operations.push(op)
+
+          if is_join
+            op =
+              if field[:name] != field[:alias]
+                Operation["rename"].new(field[:tmp], field[:alias])
+              else
+                Operation["rename"].new(field[:tmp], field[:name])
+              end
+            add_post_operation(op)
+          end
+
+          field
+        end
+
+        if is_join
           @joins = {}
           origin_names = @origin_fields.collect { |f| f[:alias] }
           target_names = @target_fields.collect { |f| f[:alias] }
@@ -73,13 +96,14 @@ module Ethel
 
       def transform(row)
         perform_transform(row) do |row|
-          target_names = @target_fields.collect { |f| f[:name] }
+          target_names = @target_fields.collect { |f| f[:tmp] }
+          origin_names = @origin_fields.collect { |f| f[:tmp] }
+          origin_keys = row.values_at(*origin_names)
 
           if @joins
-            origin_names = @origin_fields.collect { |f| f[:alias] }
-            origin_keys = row.values_at(*origin_names)
             row_joins = @joins[origin_keys]
             @target_reader.each_row do |target_row|
+              target_row = perform_transform(target_row, @target_pre_operations, [])
               target_keys = target_row.values_at(*target_names)
               if row_joins.include?(target_keys)
                 row = row.merge(target_row)
@@ -87,9 +111,8 @@ module Ethel
               end
             end
           else
-            origin_names = @origin_fields.collect { |f| f[:name] }
-            origin_keys = row.values_at(*origin_names)
             @target_reader.each_row do |target_row|
+              target_row = perform_transform(target_row, @target_pre_operations, [])
               target_keys = target_row.values_at(*target_names)
               if origin_keys == target_keys
                 row = row.merge(target_row.reject { |k, v| target_names.include?(k) })
@@ -103,13 +126,15 @@ module Ethel
 
       private
 
-      def process_field(field)
-        case field
-        when String
-          { :name => field, :alias => field }
-        when Hash
-          field
-        end
+      def process_field(field, tmp_name)
+        hsh =
+          case field
+          when String
+            { :name => field, :alias => field }
+          when Hash
+            field
+          end
+        hsh.merge(:tmp => tmp_name)
       end
 
       register('merge', self)

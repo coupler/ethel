@@ -10,34 +10,45 @@ module TestOperations
     end
 
     test "adds fields during setup callback" do
-      reader = stub('reader')
-      op = Operations::Merge.new(reader, :fields => 'id')
+      target_reader = stub('target reader')
+      op = Operations::Merge.new(target_reader, :fields => 'id')
 
-      dataset_1 = stub('dataset 1')
-      dataset_2 = stub('dataset 2')
-      Dataset.expects(:new).returns(dataset_2)
-      reader.expects(:read).with(dataset_2)
-      field_1 = stub('field 1', :name => 'id', :type => :integer)
-      field_2 = stub('field 2', :name => 'foo', :type => :string)
-      dataset_2.expects(:each_field).multiple_yields([field_1], [field_2])
-      dataset_1.expects(:add_field).with(field_2)
-      op.setup(dataset_1)
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("id", :type => :integer))
+      target_dataset.add_field(Field.new("foo", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+
+      op.setup(origin_dataset)
+
+      field = origin_dataset.field("foo", true)
+      assert_equal "foo", field.name
+      assert_equal :string, field.type
     end
 
     test "adds fields during setup callback for multiple fields" do
-      reader = stub('reader')
-      op = Operations::Merge.new(reader, :fields => ['id1', 'id2'])
+      target_reader = stub('target reader')
+      op = Operations::Merge.new(target_reader, :fields => ['id1', 'id2'])
 
-      dataset_1 = stub('dataset 1')
-      dataset_2 = stub('dataset 2')
-      Dataset.expects(:new).returns(dataset_2)
-      reader.expects(:read).with(dataset_2)
-      field_1 = stub('field 1', :name => 'id1', :type => :integer)
-      field_2 = stub('field 2', :name => 'id2', :type => :integer)
-      field_3 = stub('field 3', :name => 'foo', :type => :string)
-      dataset_2.expects(:each_field).multiple_yields([field_1], [field_2], [field_3])
-      dataset_1.expects(:add_field).with(field_3)
-      op.setup(dataset_1)
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id1", :type => :integer))
+      origin_dataset.add_field(Field.new("id2", :type => :integer))
+
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("id1", :type => :integer))
+      target_dataset.add_field(Field.new("id2", :type => :integer))
+      target_dataset.add_field(Field.new("foo", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+
+      op.setup(origin_dataset)
+
+      field = origin_dataset.field("foo", true)
+      assert_equal "foo", field.name
+      assert_equal :string, field.type
     end
 
     test "raise error if matching field arrays are different lengths" do
@@ -94,6 +105,42 @@ module TestOperations
 
       target_row_1 = {'fooid' => 1, 'bar' => 'one'}
       target_row_2 = {'fooid' => 2, 'bar' => 'two'}
+      target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
+
+      origin_row_1 = {'id' => 1, 'foo' => 'one'}
+      expected_row_1 = {
+        'origin_id' => 1, 'foo' => 'one',
+        'target_id' => 2, 'bar' => 'two'
+      }
+      assert_equal(expected_row_1, op.transform(origin_row_1))
+
+      origin_row_2 = {'id' => 2, 'foo' => 'two'}
+      expected_row_2 = {
+        'origin_id' => 2, 'foo' => 'two',
+        'target_id' => 1, 'bar' => 'one'
+      }
+      assert_equal(expected_row_2, op.transform(origin_row_2))
+    end
+
+    test "using a join table with conflicting field names" do
+      target_reader = stub('target reader')
+
+      join_reader = stub('join reader')
+      join_row_1 = {'origin_id' => 1, 'target_id' => 2}
+      join_row_2 = {'origin_id' => 2, 'target_id' => 1}
+      join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
+      op = Operations::Merge.new(target_reader, {
+        :join_reader => join_reader,
+        :origin_fields => [
+          { :name => 'id', :alias => 'origin_id' }
+        ],
+        :target_fields => [
+          { :name => 'origin_id', :alias => 'target_id' }
+        ]
+      })
+
+      target_row_1 = {'origin_id' => 1, 'bar' => 'one'}
+      target_row_2 = {'origin_id' => 2, 'bar' => 'two'}
       target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
 
       origin_row_1 = {'id' => 1, 'foo' => 'one'}
