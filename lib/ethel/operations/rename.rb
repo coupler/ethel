@@ -18,8 +18,9 @@ module Ethel
 
       def transform(row)
         perform_transform(row) do |row|
-          row[@new_name] = row.delete(@name)
-          row
+          new_row = row.dup
+          new_row[@new_name] = new_row.delete(@name)
+          new_row
         end
       end
 

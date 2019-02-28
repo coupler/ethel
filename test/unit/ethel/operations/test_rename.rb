@@ -31,6 +31,13 @@ module TestOperations
       assert_equal({'bar' => 123}, op.transform(row))
     end
 
+    test "transform does not alter original row" do
+      row = {'foo' => 123}
+      op = Operations::Rename.new('foo', 'bar')
+      new_row = op.transform(row)
+      assert_equal({'foo' => 123}, row)
+    end
+
     test "registers itself" do
       assert_equal Operations::Rename, Operation['rename']
     end
