@@ -19,83 +19,32 @@ class TestOperation < Test::Unit::TestCase
     assert_equal klass, Ethel::Operation['foo']
   end
 
-  test "#perform_setup chains pre operations" do
-    pre_op = stub('pre-operation')
+  test "#setup chains child operations" do
+    child = stub('child operation')
     klass = new_subclass do
       define_method(:initialize) do |*args|
         super(*args)
-        add_pre_operation(pre_op)
-      end
-      define_method(:setup) do |dataset|
-        perform_setup(dataset) do |arg|
-          dataset
-        end
+        add_child_operation(child)
       end
     end
     op = klass.new
 
     dataset = stub('dataset')
-    pre_op.expects(:setup).with(dataset).returns(dataset)
-    assert_same(op.setup(dataset), dataset)
+    child.expects(:setup).with(dataset)
+    op.setup(dataset)
   end
 
-  test "#perform_setup chains post operations" do
-    post_op = stub('post-operation')
+  test "#transform chains child operations" do
+    child = stub('child operation')
     klass = new_subclass do
       define_method(:initialize) do |*args|
         super(*args)
-        add_post_operation(post_op)
-      end
-      define_method(:setup) do |dataset|
-        perform_setup(dataset) do |arg|
-          dataset
-        end
+        add_child_operation(child)
       end
     end
     op = klass.new
 
-    dataset = stub('dataset')
-    post_op.expects(:setup).with(dataset).returns(dataset)
-    assert_same(op.setup(dataset), dataset)
-  end
-
-  test "#perform_transform chains pre operations" do
-    pre_op = stub('pre-operation')
-    klass = new_subclass do
-      define_method(:initialize) do |*args|
-        super(*args)
-        add_pre_operation(pre_op)
-      end
-      define_method(:transform) do |row|
-        perform_transform(row) do
-          row
-        end
-      end
-    end
-    op = klass.new
-
-    row = stub('row')
-    pre_op.expects(:transform).with(row).returns(row)
-    assert_same(op.transform(row), row)
-  end
-
-  test "#perform_transform chains post operations" do
-    post_op = stub('post-operation')
-    klass = new_subclass do
-      define_method(:initialize) do |*args|
-        super(*args)
-        add_post_operation(post_op)
-      end
-      define_method(:transform) do |row|
-        perform_transform(row) do
-          row
-        end
-      end
-    end
-    op = klass.new
-
-    row = stub('row')
-    post_op.expects(:transform).with(row).returns(row)
-    assert_same(op.transform(row), row)
+    child.expects(:transform).with({'foo' => 'bar'}).returns({'foo' => 123})
+    assert_equal({'foo' => 123}, op.transform({'foo' => 'bar'}))
   end
 end

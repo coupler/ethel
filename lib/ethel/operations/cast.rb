@@ -8,26 +8,25 @@ module Ethel
       end
 
       def setup(dataset)
-        perform_setup(dataset) do |dataset|
-          new_field = Field.new(@name, :type => @new_type)
-          dataset.alter_field(@name, new_field)
-          dataset
-        end
+        super
+        new_field = Field.new(@name, :type => @new_type)
+        dataset.alter_field(@name, new_field)
       end
 
       def transform(row)
-        perform_transform(row) do |row|
-          row[@name] =
-            case @new_type
-            when :integer
-              row[@name].to_i
-            when :float
-              row[@name].to_f
-            when :string
-              row[@name].to_s
-            end
-          row
-        end
+        row = super(row)
+
+        row[@name] =
+          case @new_type
+          when :integer
+            row[@name].to_i
+          when :float
+            row[@name].to_f
+          when :string
+            row[@name].to_s
+          end
+
+        row
       end
 
       register('cast', self)

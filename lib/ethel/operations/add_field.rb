@@ -8,17 +8,14 @@ module Ethel
       end
 
       def setup(dataset)
-        perform_setup(dataset) do |dataset|
-          dataset.add_field(Field.new(@name, :type => @type))
-          dataset
-        end
+        super
+        dataset.add_field(Field.new(@name, :type => @type))
       end
 
       def transform(row)
-        perform_transform(row) do |row|
-          row[@name] = nil
-          row
-        end
+        row = super(row)
+        row[@name] = nil
+        row
       end
 
       register('add_field', self)

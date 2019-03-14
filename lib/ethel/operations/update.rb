@@ -18,33 +18,30 @@ module Ethel
       end
 
       def setup(dataset)
-        perform_setup(dataset) do |dataset|
-          if @name
-            @field = dataset.field(@name, true)
-            if @static && !@value.nil?
-              value_type = Util.type_of(@value)
-              if !(@field.type == :blob && value_type == :string) && value_type != @field.type
-                raise InvalidFieldType, "expected value to be of type #{@field.type}, but was #{value_type}"
-              end
+        super
+        if @name
+          @field = dataset.field(@name, true)
+          if @static && !@value.nil?
+            value_type = Util.type_of(@value)
+            if !(@field.type == :blob && value_type == :string) && value_type != @field.type
+              raise InvalidFieldType, "expected value to be of type #{@field.type}, but was #{value_type}"
             end
           end
-          dataset
         end
       end
 
       def transform(row)
-        perform_transform(row) do |row|
-          if @name
-            if @filter.nil? || @filter.call(row)
-              new_value = @static ? @value : @value.call(row)
-              row[@name] = new_value
-            end
-          else
-            # Update whole row
-            @block.call(row)
+        row = super(row)
+        if @name
+          if @filter.nil? || @filter.call(row)
+            new_value = @static ? @value : @value.call(row)
+            row[@name] = new_value
           end
-          row
+        else
+          # Update whole row
+          @block.call(row)
         end
+        row
       end
 
       register('update', self)
