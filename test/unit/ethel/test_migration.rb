@@ -140,4 +140,29 @@ class TestMigration < Test::Unit::TestCase
     seq << @writer.expects(:flush)
     m.run
   end
+
+  test "filtering fields" do
+    dataset = stub('dataset')
+    Ethel::Dataset.expects(:new).returns(dataset)
+    @reader.expects(:read).with(dataset)
+    m = Ethel::Migration.new(@reader, @writer)
+
+    filter_op = stub('filter operation')
+    m.add_operation(filter_op)
+
+    seq = SequenceHelper.new('run sequence')
+
+    seq << filter_op.expects(:setup).with(dataset)
+    seq << @writer.expects(:prepare).with(dataset)
+
+    row_1 = stub('row')
+    row_2 = stub('row')
+    seq << @reader.expects(:each_row).multiple_yields([row_1], [row_2])
+    seq << filter_op.expects(:transform).with(row_1).returns(:skip)
+    seq << filter_op.expects(:transform).with(row_2).returns(row_2)
+    seq << dataset.expects(:validate_row).with(row_2)
+    seq << @writer.expects(:add_row).with(row_2)
+    seq << @writer.expects(:flush)
+    m.run
+  end
 end
