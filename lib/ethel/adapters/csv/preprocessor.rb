@@ -59,12 +59,15 @@ module Ethel
               end
             rescue ::CSV::MalformedCSVError => e
               case e.message
-              when /^Unclosed quoted field on line (\d+)\.$/
+              when /^Unclosed quoted field [oi]n line (\d+)\.$/,
                 error = UnclosedQuoteError.new($1.to_i)
                 @errors << error
-              when /^Missing or stray quote in line (\d+)$/
+              when /^Missing or stray quote in line (\d+)$/,
+                   /^Any value after quoted field isn't allowed in line (\d+)\.$/
                 error = StrayQuoteError.new($1.to_i)
                 @errors << error
+              else
+                raise e
               end
             end
           end
