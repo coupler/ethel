@@ -10,15 +10,7 @@ module TestOperations
     end
 
     test "adds fields during setup callback" do
-      origin_dataset = Dataset.new
-
       target_reader = stub('target reader')
-      target_dataset = Dataset.new
-      target_dataset.add_field(Field.new("tid", :type => :integer))
-      target_dataset.add_field(Field.new("foo", :type => :string))
-      Dataset.expects(:new).returns(target_dataset)
-      target_reader.expects(:read).with(target_dataset)
-
       join_reader = stub('join reader', :each_row => nil)
       opts = {
         origin_fields: [{ name: 'oid', alias: 'origin_id' }],
@@ -26,7 +18,15 @@ module TestOperations
       }
       op = Operations::Join.new(target_reader, join_reader, opts)
 
+      origin_dataset = Dataset.new
       origin_dataset.add_field(Field.new("oid", :type => :integer))
+
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("tid", :type => :integer))
+      target_dataset.add_field(Field.new("foo", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+
       op.setup(origin_dataset)
 
       fields = []
@@ -55,9 +55,9 @@ module TestOperations
       assert_equal "origin and target fields must be the same length", exp.message
     end
 
-    test "merges rows during transform" do
-      target_reader = stub('target reader', :read => nil)
-
+    test "joins rows during transform" do
+      # initialize
+      target_reader = stub('target reader')
       join_reader = stub('join reader')
       join_row_1 = {'origin_id' => 1, 'target_id' => 2}
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
@@ -71,6 +71,18 @@ module TestOperations
         ]
       })
 
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("fooid", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
       target_row_1 = {'fooid' => 1, 'bar' => 'one'}
       target_row_2 = {'fooid' => 2, 'bar' => 'two'}
       target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
@@ -90,9 +102,9 @@ module TestOperations
       assert_equal(expected_row_2, op.transform(origin_row_2))
     end
 
-    test "merges rows with conflicting names during transform" do
-      target_reader = stub('target reader', :read => nil)
-
+    test "joins rows with conflicting primary keys during transform" do
+      # initialize
+      target_reader = stub('target reader')
       join_reader = stub('join reader')
       join_row_1 = {'origin_id' => 1, 'target_id' => 2}
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
@@ -107,6 +119,18 @@ module TestOperations
         ]
       })
 
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("origin_id", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
       target_row_1 = {'origin_id' => 1, 'bar' => 'one'}
       target_row_2 = {'origin_id' => 2, 'bar' => 'two'}
       target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
@@ -127,8 +151,8 @@ module TestOperations
     end
 
     test "transform skips origin rows with no join table rows" do
+      # initialize
       target_reader = stub('target reader', :read => nil)
-
       join_reader = stub('join reader')
       join_row_1 = {'origin_id' => 1, 'target_id' => 2}
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
@@ -142,13 +166,25 @@ module TestOperations
         ]
       })
 
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("fooid", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
       origin_row = {'id' => 3, 'foo' => 'one'}
       assert_equal(:skip, op.transform(origin_row))
     end
 
     test "transform skips origin rows with no matching target rows" do
-      target_reader = stub('target reader', :read => nil)
-
+      # initialize
+      target_reader = stub('target reader')
       join_reader = stub('join reader')
       join_row_1 = {'origin_id' => 1, 'target_id' => 2}
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
@@ -162,12 +198,122 @@ module TestOperations
         ]
       })
 
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("fooid", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
       target_row_1 = {'origin_id' => 3, 'bar' => 'three'}
       target_row_2 = {'origin_id' => 4, 'bar' => 'four'}
       target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2])
 
       origin_row = {'id' => 1, 'foo' => 'one'}
       assert_equal(:skip, op.transform(origin_row))
+    end
+
+    test "automatically joins rows with conflicting names during transform" do
+      # initialize
+      target_reader = stub('target reader')
+      join_reader = stub('join reader')
+      join_row_1 = {'origin_id' => 1, 'target_id' => 2}
+      join_row_2 = {'origin_id' => 2, 'target_id' => 1}
+      join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
+      op = Operations::Join.new(target_reader, join_reader, {
+        :join_reader => join_reader,
+        :origin_fields => [
+          { :name => 'id', :alias => 'origin_id' }
+        ],
+        :target_fields => [
+          { :name => 'id', :alias => 'target_id' }
+        ]
+      })
+
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("id", :type => :integer))
+      target_dataset.add_field(Field.new("foo", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
+      target_row_1 = {'id' => 1, 'foo' => 'target one'}
+      target_row_2 = {'id' => 2, 'foo' => 'target two'}
+      target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
+
+      origin_row_1 = {'id' => 1, 'foo' => 'origin one'}
+      expected_row_1 = {
+        'origin_id' => 1, 'origin_foo' => 'origin one',
+        'target_id' => 2, 'target_foo' => 'target two'
+      }
+      assert_equal(expected_row_1, op.transform(origin_row_1))
+
+      origin_row_2 = {'id' => 2, 'foo' => 'origin two'}
+      expected_row_2 = {
+        'origin_id' => 2, 'origin_foo' => 'origin two',
+        'target_id' => 1, 'target_foo' => 'target one'
+      }
+      assert_equal(expected_row_2, op.transform(origin_row_2))
+    end
+
+    test "handles join alias conflict with origin field" do
+      omit("not sure how to fix this yet")
+
+      # initialize
+      target_reader = stub('target reader')
+      join_reader = stub('join reader')
+      join_row_1 = {'foo' => 1, 'target_id' => 2}
+      join_row_2 = {'foo' => 2, 'target_id' => 1}
+      join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
+      op = Operations::Join.new(target_reader, join_reader, {
+        :join_reader => join_reader,
+        :origin_fields => [
+          { :name => 'id', :alias => 'foo' }
+        ],
+        :target_fields => [
+          { :name => 'id', :alias => 'target_id' }
+        ]
+      })
+
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("id", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
+      target_row_1 = {'id' => 1, 'bar' => 'one'}
+      target_row_2 = {'id' => 2, 'bar' => 'two'}
+      target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
+
+      origin_row_1 = {'id' => 1, 'foo' => 'one'}
+      expected_row_1 = {
+        'foo' => 1, 'origin_foo' => 'one',
+        'target_id' => 2, 'bar' => 'target two'
+      }
+      assert_equal(expected_row_1, op.transform(origin_row_1))
+
+      origin_row_2 = {'id' => 2, 'foo' => 'two'}
+      expected_row_2 = {
+        'foo' => 2, 'origin_foo' => 'two',
+        'target_id' => 1, 'bar' => 'target one'
+      }
+      assert_equal(expected_row_2, op.transform(origin_row_2))
     end
 
     test "registers itself" do
