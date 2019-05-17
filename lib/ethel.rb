@@ -1,5 +1,6 @@
 require 'csv'
 require 'bigdecimal'
+require 'date'
 
 require 'ethel/version'
 require 'ethel/error'

@@ -20,10 +20,9 @@ module TestAdapters
         file = Tempfile.new('csv')
         csv = Writer.new(:file => file.path)
 
-        field_1 = stub('foo field', :name => 'foo', :type => :string)
-        field_2 = stub('bar field', :name => 'bar', :type => :string)
-        dataset = stub('dataset')
-        dataset.expects(:each_field).multiple_yields([field_1], [field_2])
+        dataset = Dataset.new
+        dataset.add_field(Field.new('foo', :type => :string))
+        dataset.add_field(Field.new('bar', :type => :string))
         csv.prepare(dataset)
         csv.add_row({'foo' => '123', 'bar' => '456'})
         csv.flush
@@ -35,15 +34,38 @@ module TestAdapters
       test "output to string" do
         csv = Writer.new(:string => true)
 
-        field_1 = stub('foo field', :name => 'foo', :type => :string)
-        field_2 = stub('bar field', :name => 'bar', :type => :string)
-        dataset = stub('dataset')
-        dataset.expects(:each_field).multiple_yields([field_1], [field_2])
+        dataset = Dataset.new
+        dataset.add_field(Field.new('foo', :type => :string))
+        dataset.add_field(Field.new('bar', :type => :string))
         csv.prepare(dataset)
         csv.add_row({'foo' => '123', 'bar' => '456'})
         csv.flush
 
         assert_equal "foo,bar\n123,456\n", csv.data
+      end
+
+      test "default date to string conversion" do
+        csv = Writer.new(:string => true)
+
+        dataset = Dataset.new
+        dataset.add_field(Field.new('foo', :type => :date))
+        csv.prepare(dataset)
+        csv.add_row({'foo' => Date.new(2019, 1, 2)})
+        csv.flush
+
+        assert_equal "foo\n2019-01-02\n", csv.data
+      end
+
+      test "custom date to string conversion" do
+        csv = Writer.new(:string => true, :date_format => "%m/%d/%Y")
+
+        dataset = Dataset.new
+        dataset.add_field(Field.new('foo', :type => :date))
+        csv.prepare(dataset)
+        csv.add_row({'foo' => Date.new(2019, 1, 2)})
+        csv.flush
+
+        assert_equal "foo\n01/02/2019\n", csv.data
       end
 
       test "registers itself" do
