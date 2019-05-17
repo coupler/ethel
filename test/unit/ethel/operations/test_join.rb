@@ -110,7 +110,6 @@ module TestOperations
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
       join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
       op = Operations::Join.new(target_reader, join_reader, {
-        :join_reader => join_reader,
         :origin_fields => [
           { :name => 'id', :alias => 'origin_id' }
         ],
@@ -226,7 +225,6 @@ module TestOperations
       join_row_2 = {'origin_id' => 2, 'target_id' => 1}
       join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
       op = Operations::Join.new(target_reader, join_reader, {
-        :join_reader => join_reader,
         :origin_fields => [
           { :name => 'id', :alias => 'origin_id' }
         ],
@@ -276,7 +274,6 @@ module TestOperations
       join_row_2 = {'foo' => 2, 'target_id' => 1}
       join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
       op = Operations::Join.new(target_reader, join_reader, {
-        :join_reader => join_reader,
         :origin_fields => [
           { :name => 'id', :alias => 'foo' }
         ],
