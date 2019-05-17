@@ -42,6 +42,19 @@ module TestOperations
       assert_equal({'foo' => 1.0}, op.transform(row))
     end
 
+    test "uses strptime when casting to date" do
+      op = Operations::Cast.new('foo', :date, :format => '%Y-%m-%d')
+      row = {'foo' => '2019-01-01'}
+      expected = {'foo' => Date.new(2019, 1, 1)}
+      assert_equal(expected, op.transform(row))
+    end
+
+    test "raises error if date format is not given when casting to date" do
+      assert_raises do
+        Operations::Cast.new('foo', :date)
+      end
+    end
+
     test "registers itself" do
       assert_equal Operations::Cast, Operation['cast']
     end

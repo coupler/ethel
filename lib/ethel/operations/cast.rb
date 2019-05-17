@@ -1,10 +1,15 @@
 module Ethel
   module Operations
     class Cast < Operation
-      def initialize(name, new_type)
+      def initialize(name, new_type, options = {})
         super
         @name = name
         @new_type = new_type
+        @options = options
+
+        if new_type == :date && !options.has_key?(:format)
+          raise ":format option must be specified when new_type is :date"
+        end
       end
 
       def setup(dataset)
@@ -24,6 +29,8 @@ module Ethel
             row[@name].to_f
           when :string
             row[@name].to_s
+          when :date
+            Date.strptime(row[@name], @options[:format])
           end
 
         row
