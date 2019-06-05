@@ -21,5 +21,19 @@ module Ethel
         :decimal
       end
     end
+
+    def self.cast(value, new_type, options = {})
+      case new_type
+      when :integer
+        value.to_i
+      when :float
+        value.to_f
+      when :string
+        value.to_s
+      when :date
+        raise "missing date format" if options[:format].nil?
+        Date.strptime(value, options[:format])
+      end
+    end
   end
 end

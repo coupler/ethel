@@ -20,19 +20,7 @@ module Ethel
 
       def transform(row)
         row = super(row)
-
-        row[@name] =
-          case @new_type
-          when :integer
-            row[@name].to_i
-          when :float
-            row[@name].to_f
-          when :string
-            row[@name].to_s
-          when :date
-            Date.strptime(row[@name], @options[:format])
-          end
-
+        row[@name] = Util.cast(row[@name], @new_type, @options)
         row
       end
 
