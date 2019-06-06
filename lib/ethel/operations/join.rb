@@ -55,14 +55,6 @@ module Ethel
           @target_fields[:names]        << field[:name]
           @target_fields[:aliases]      << field[:alias]
         end
-
-        # collect sets of join keys, using the origin and target aliases
-        @joins = {}
-        join_reader.each_row do |row|
-          origin_keys = row.values_at(*@origin_fields[:join_aliases])
-          @joins[origin_keys] ||= []
-          @joins[origin_keys].push(row.values_at(*@target_fields[:join_aliases]))
-        end
       end
 
       def setup(origin_dataset)
@@ -71,6 +63,34 @@ module Ethel
         # get dataset metadata from target reader
         target_dataset = Dataset.new
         @target_reader.read(target_dataset)
+
+        # get key types of origin and target keys
+        origin_key_types =
+          @origin_fields[:join_names].collect do |name|
+            field = origin_dataset.field(name, true)
+            field.type
+          end
+        target_key_types =
+          @target_fields[:join_names].collect do |name|
+            field = target_dataset.field(name, true)
+            field.type
+          end
+
+        # collect sets of join keys, using the origin and target aliases
+        @joins = {}
+        @join_reader.each_row do |row|
+          origin_keys = row.values_at(*@origin_fields[:join_aliases])
+          origin_keys.collect!.with_index do |value, i|
+            Util.cast(value, origin_key_types[i])
+          end
+          @joins[origin_keys] ||= []
+
+          target_keys = row.values_at(*@target_fields[:join_aliases])
+          target_keys.collect!.with_index do |value, i|
+            Util.cast(value, target_key_types[i])
+          end
+          @joins[origin_keys].push(target_keys)
+        end
 
         # rename origin fields as necessary
         conflicting_names = []

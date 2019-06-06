@@ -217,6 +217,54 @@ module TestOperations
       assert_equal(:skip, op.transform(origin_row))
     end
 
+    test "joins rows during transform with mismatched join table field type" do
+      # initialize
+      target_reader = stub('target reader')
+      join_reader = stub('join reader')
+      join_row_1 = {'origin_id' => '1', 'target_id' => '2'}
+      join_row_2 = {'origin_id' => '2', 'target_id' => '1'}
+      join_reader.expects(:each_row).multiple_yields([join_row_1], [join_row_2]).once
+
+      op = Operations::Join.new(target_reader, join_reader, {
+        :origin_fields => [
+          { :name => 'id', :alias => 'origin_id' }
+        ],
+        :target_fields => [
+          { :name => 'fooid', :alias => 'target_id' }
+        ]
+      })
+
+      # setup
+      origin_dataset = Dataset.new
+      origin_dataset.add_field(Field.new("id", :type => :integer))
+      origin_dataset.add_field(Field.new("foo", :type => :string))
+      target_dataset = Dataset.new
+      target_dataset.add_field(Field.new("fooid", :type => :integer))
+      target_dataset.add_field(Field.new("bar", :type => :string))
+      Dataset.expects(:new).returns(target_dataset)
+      target_reader.expects(:read).with(target_dataset)
+      op.setup(origin_dataset)
+
+      # transform
+      target_row_1 = {'fooid' => 1, 'bar' => 'one'}
+      target_row_2 = {'fooid' => 2, 'bar' => 'two'}
+      target_reader.expects(:each_row).multiple_yields([target_row_1], [target_row_2]).twice
+
+      origin_row_1 = {'id' => 1, 'foo' => 'one'}
+      expected_row_1 = {
+        'origin_id' => 1, 'foo' => 'one',
+        'target_id' => 2, 'bar' => 'two'
+      }
+      assert_equal(expected_row_1, op.transform(origin_row_1))
+
+      origin_row_2 = {'id' => 2, 'foo' => 'two'}
+      expected_row_2 = {
+        'origin_id' => 2, 'foo' => 'two',
+        'target_id' => 1, 'bar' => 'one'
+      }
+      assert_equal(expected_row_2, op.transform(origin_row_2))
+    end
+
     test "automatically joins rows with conflicting names during transform" do
       # initialize
       target_reader = stub('target reader')
